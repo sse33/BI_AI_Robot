@@ -1,0 +1,415 @@
+# BI 报告元数据配置
+# 结构：reports[] → public_filters[] + cards[]
+# 用途：驱动数据采集、截图核对、事实核查等通用流程
+#
+# card.collect: true  = 纳入日常采集
+# card.cd_type: CHART / DRILL / SELECTOR / TEXT
+# 注：SELECTOR / TEXT 无需采集，DRILL 可直接 API 拉取无需用户交互
+
+reports:
+  - id: "i752edbfe9d7d48ef8da1cde"       # portal-app ID（URL 中的 ID）
+    pg_id: "e0be35cef643848f5b4105d8"    # 内部 page ID（/api/page/{pg_id} 用）
+    name: "och线下每日销售报告"
+    alias: "daily_sales"
+    dashboard_url: "https://bi.trendy-global.com/home/web-app/i752edbfe9d7d48ef8da1cde"
+    manifest_file: "daily_sales_manifest.json"   # outputs/ 目录下的原始数据文件名
+
+    # ── 公共筛选器 ────────────────────────────────────────────────────────────
+    # linked_cards: 通过 intercept_filters.py 拦截获取的卡片关联关系
+    # link_type: filter    → 通过 filters[] 传参（fdId / dsId 字段级过滤）
+    #            dynparam  → 通过 dynamicParams[] 传参（dpId 动态参数）
+    # scope: global        → 影响全部 CHART 卡片（仪表板顶部筛选区）
+    #        partial       → 只影响部分卡片（局部筛选器）
+    # intercept_status: confirmed  → 已通过拦截验证关联关系
+    #                   partial    → 部分卡片已验证，其余待确认
+    #                   unknown    → 未拦截，关联关系未知
+
+    public_filters:
+
+      - key: channel
+        cd_id: "q9ecb96ca7779403d8b27687"
+        name: "渠道"
+        cd_type: SELECTOR
+        scope: global
+        intercept_status: partial   # 已确认 6/16 张卡片，其余待页签拦截
+        linked_cards:
+          - card_key: dailySalesOverview
+            cd_id: "peaee175ceeb24483995edf1"
+            link_type: filter
+            field_name: "管理渠道名称_终端属性"
+            fd_id: "d8e77ae4a37464b0291a9d4f"
+            ds_id: "f3e70e241530d4c41af12edd"
+            filter_type: IN
+          - card_key: salesTrend
+            cd_id: "va60ffe8f39e94e2db7d1917"
+            link_type: filter
+            field_name: "管理渠道"
+            fd_id: "h30502466dec9415f8e61359"
+            ds_id: "f8cd8b508caf943a1872a272"
+            filter_type: IN
+          - card_key: categoryStructureRegular
+            cd_id: "cc9cdfd9a603d427c9292b80"
+            link_type: filter
+            field_name: "管理渠道"
+            fd_id: "h30502466dec9415f8e61359"
+            ds_id: "f8cd8b508caf943a1872a272"
+            filter_type: IN
+          - card_key: categoryStructureOutlet
+            cd_id: "n078e9c5ad540455889f3216"
+            link_type: filter
+            field_name: "管理渠道"
+            fd_id: "h30502466dec9415f8e61359"
+            ds_id: "f8cd8b508caf943a1872a272"
+            filter_type: IN
+          - card_key: skcTop10
+            cd_id: "k02a7d3097d94489381bbed7"
+            link_type: filter
+            field_name: "渠道"
+            fd_id: "d1f2cf6983ff7469b8353fd2"
+            ds_id: "je2dbac4d27eb4c87aab0f15"
+            filter_type: IN
+          - card_key: skcSellThroughCity
+            cd_id: "f88647253435141e8a88cac8"
+            link_type: filter
+            field_name: "管理渠道"
+            fd_id: "m84a6caeb08124f40aa22ae4"
+            ds_id: "k86182a257da84425af42667"
+            filter_type: IN
+
+      - key: city
+        cd_id: "m13b55378629a4d47b806a36"    # 城市筛选器（仪表板共3个实例，主实例）
+        name: "城市"
+        cd_type: SELECTOR
+        scope: partial
+        intercept_status: unknown
+        extra_instances:
+          - "a8a3b106e895148728f2494d"
+          - "b0d0c89121f994b92aa3ec7e"
+        linked_cards: []   # 待拦截确认
+
+      - key: price_type
+        cd_id: "qe0048227348142ea9bf122b"
+        name: "价格类别"
+        cd_type: SELECTOR
+        scope: partial
+        intercept_status: confirmed
+        linked_cards:
+          - card_key: skcTop10
+            cd_id: "k02a7d3097d94489381bbed7"
+            link_type: filter
+            field_name: "商品价格类别I"
+            fd_id: "h52038d1151c645279da48ad"
+            ds_id: "je2dbac4d27eb4c87aab0f15"
+            filter_type: IN
+            default_value: ["当年正价"]   # 仪表板默认值，API 无筛选时返回全部
+
+      - key: rank_basis
+        cd_id: "d987ad9bedf1042f591b3fa2"
+        name: "排名口径"
+        cd_type: SELECTOR
+        scope: partial
+        intercept_status: confirmed
+        linked_cards:
+          - card_key: skcTop10
+            cd_id: "k02a7d3097d94489381bbed7"
+            link_type: dynparam
+            dp_id: "b7db4e5e1a25b48da813571b"
+            param_name: "文本型参数"
+            value_type: STRING
+            default_value: "金额"
+
+      - key: date
+        cd_id: "kd35d970e8b8444b1ab9be54"
+        name: "日期"
+        cd_type: SELECTOR
+        scope: partial
+        intercept_status: partial   # 已确认 5 张，skcSellThroughCity 无日期参数
+        linked_cards:
+          - card_key: dailySalesOverview
+            cd_id: "peaee175ceeb24483995edf1"
+            link_type: dynparam
+            dp_id: "nc0f005a2bf3241829871357"
+            param_name: "D_END"
+            value_type: DATE
+          - card_key: salesTrend
+            cd_id: "va60ffe8f39e94e2db7d1917"
+            link_type: dynparam
+            dp_id: "nc0f005a2bf3241829871357"
+            param_name: "D_END"
+            value_type: DATE
+          - card_key: categoryStructureRegular
+            cd_id: "cc9cdfd9a603d427c9292b80"
+            link_type: dynparam
+            dp_id: "nc0f005a2bf3241829871357"
+            param_name: "D_END"
+            value_type: DATE
+          - card_key: categoryStructureOutlet
+            cd_id: "n078e9c5ad540455889f3216"
+            link_type: dynparam
+            dp_id: "nc0f005a2bf3241829871357"
+            param_name: "D_END"
+            value_type: DATE
+          - card_key: skcTop10
+            cd_id: "k02a7d3097d94489381bbed7"
+            link_type: dynparam
+            dp_id: "nc0f005a2bf3241829871357"
+            param_name: "D_END"
+            value_type: DATE
+
+    # ── 数据卡片（CHART / DRILL）─────────────────────────────────────────────
+
+    cards:
+
+      # ── 城市 / 渠道 级别 ──────────────────────────────────────────────────────
+
+      - key: dailySalesOverview
+        cd_id: "peaee175ceeb24483995edf1"
+        cd_type: CHART
+        name: "每日销售概况（城市级）"
+        desc: "渠道 × 城市，正价 / 奥莱 核心销售指标"
+        collect: true
+        expected_rows: 44
+        dim_cols: [渠道, 城市]
+        metric_cols:
+          - 正价_业绩
+          - 正价_店数
+          - 正价_店均业绩
+          - 正价_UPT
+          - 正价_店均单数
+          - 正价_客单价
+          - 正价_入机折扣
+          - 正价_实销折扣
+          - 奥莱_业绩
+          - 奥莱_店数
+          - 奥莱_店均业绩
+          - 奥莱_UPT
+          - 奥莱_店均单数
+          - 奥莱_客单价
+          - 奥莱_入机折扣
+          - 奥莱_实销折扣
+        verify_samples:
+          - dim: {渠道: "总计", 城市: "总计"}
+            fields: [正价_业绩, 正价_店数, 奥莱_业绩, 奥莱_店数]
+          - dim: {渠道: "自营", 城市: "北京"}
+            fields: [正价_业绩, 正价_店数, 正价_店均业绩]
+          - dim: {渠道: "自营", 城市: "天津"}
+            fields: [正价_业绩, 正价_店数]
+
+      - key: salesTrend
+        cd_id: "va60ffe8f39e94e2db7d1917"
+        cd_type: CHART
+        name: "近期销售趋势（城市级）"
+        desc: "渠道 × 城市，正价 / 奥莱 扣券占比与实销折损"
+        collect: true
+        expected_rows: 42
+        dim_cols: [渠道, 城市]
+        metric_col_pattern: "{正价|奥莱}_{扣券占比|实销折损}_{当年正价|当年减价|当年活动|住年旧货}"
+
+      - key: categoryStructureRegular
+        cd_id: "cc9cdfd9a603d427c9292b80"
+        cd_type: CHART
+        name: "运营中类结构（正价）"
+        desc: "新/旧货 × 运营中类，销售吊牌% vs 总进吊牌%（正价渠道）"
+        collect: true
+        expected_rows: 42
+        channel_filter:
+          name: "管理渠道"
+          fd_id: "h30502466dec9415f8e61359"
+          ds_id: "f8cd8b508caf943a1872a272"
+          cd_id: "cc9cdfd9a603d427c9292b80"
+          source_cd_id: "q9ecb96ca7779403d8b27687"
+          values: ["自营", "托管", "联营"]
+        dim_cols: [新/旧货, 运营中类]
+        metric_cols: [销售扣券%, 销售吊牌%, 总进吊牌%]
+        derived_cols:
+          - name: 差值
+            formula: "销售吊牌% - 总进吊牌%"
+        verify_samples:
+          - dim: {新/旧货: "新货", 运营中类: "小计"}
+            fields: [销售吊牌%, 总进吊牌%]
+          - dim: {新/旧货: "旧货", 运营中类: "小计"}
+            fields: [销售吊牌%, 总进吊牌%]
+
+      - key: categoryStructureOutlet
+        cd_id: "n078e9c5ad540455889f3216"
+        cd_type: CHART
+        name: "运营中类结构（奥莱）"
+        desc: "新/旧货 × 运营中类，销售吊牌% vs 总进吊牌%（奥莱渠道）"
+        collect: true
+        expected_rows: 42
+        channel_filter:
+          name: "管理渠道"
+          fd_id: "h30502466dec9415f8e61359"
+          ds_id: "f8cd8b508caf943a1872a272"
+          cd_id: "n078e9c5ad540455889f3216"
+          source_cd_id: "q9ecb96ca7779403d8b27687"
+          values: ["自营", "托管", "联营"]
+        dim_cols: [新/旧货, 运营中类]
+        metric_cols: [销售扣券%, 销售吊牌%, 总进吊牌%]
+        derived_cols:
+          - name: 差值
+            formula: "销售吊牌% - 总进吊牌%"
+
+      # ── 波段 / SKC 级别 ───────────────────────────────────────────────────────
+
+      - key: skcTop10
+        cd_id: "k02a7d3097d94489381bbed7"
+        cd_type: CHART
+        name: "SKC TOP10"
+        desc: "当日销售 TOP10 SKC，含周转率与消化率"
+        collect: true
+        expected_rows: 10
+        channel_filter:
+          name: "渠道"
+          fd_id: "d1f2cf6983ff7469b8353fd2"
+          ds_id: "je2dbac4d27eb4c87aab0f15"
+          cd_id: "k02a7d3097d94489381bbed7"
+          source_cd_id: "q9ecb96ca7779403d8b27687"
+          values: ["自营", "托管", "联营"]
+        dim_cols: [skc编码, 波段, 产品线]
+        skip_cols: [照片]
+        metric_cols:
+          - 吊牌价
+          - T+1销售_金额
+          - T+1销售_件数
+          - T+1销售_折扣
+          - 历史销售件数_近7天
+          - 历史销售件数_累销
+          - 周转率_有销店数
+          - 周转率_投放店数
+          - 周转率_店动销
+          - 周转率_店存
+          - 周转率_店存周转周
+          - 周转率_店存消化率
+
+      - key: skcSellThroughCity
+        cd_id: "f88647253435141e8a88cac8"
+        cd_type: CHART
+        name: "近六波 SKC 动销率（城市级）"
+        desc: "城市 × 波段，正价 / 奥莱 SKC 销售数与动销率"
+        collect: true
+        expected_rows: 45
+        channel_filter:
+          name: "管理渠道"
+          fd_id: "m84a6caeb08124f40aa22ae4"
+          ds_id: "k86182a257da84425af42667"
+          cd_id: "f88647253435141e8a88cac8"
+          source_cd_id: "q9ecb96ca7779403d8b27687"
+          values: ["自营", "托管", "联营"]
+        dim_cols: [城市]
+        metric_col_pattern: "{渠道}_{波段}_skc数_{销售|投放}"
+        rate_col_pattern:   "{渠道}_{波段}_动销率_{城市|店铺}"
+
+      - key: skcSellThroughStoreRegular
+        cd_id: "v0cfbd5c1128440d7a057eb5"
+        cd_type: CHART
+        name: "近六波 SKC 动销率（正价店铺级）"
+        desc: "正价门店 × 波段，店铺维度动销率"
+        collect: true
+        expected_rows: 85
+        dim_cols: [店铺]
+        metric_col_pattern: "{波段}_skc数_{销售|投放}"
+        rate_col_pattern:   "{波段}_动销率_店铺"
+
+      - key: skcSellThroughStoreOutlet
+        cd_id: "v44fb983c2df94ee0a6269e9"
+        cd_type: CHART
+        name: "近六波 SKC 动销率（奥莱店铺级）"
+        desc: "奥莱门店 × 波段，店铺维度动销率"
+        collect: true
+        expected_rows: 21
+        dim_cols: [店铺]
+        metric_col_pattern: "{波段}_skc数_{销售|投放}"
+        rate_col_pattern:   "{波段}_动销率_店铺"
+
+      # ── 门店级别 ──────────────────────────────────────────────────────────────
+
+      - key: storeDetailRegular
+        cd_id: "c1c8c6067cae54b50a26e51f"
+        cd_type: CHART
+        name: "正价单店明细（业绩）"
+        desc: "正价门店 业绩 / UPT / 客单价 / 折扣"
+        collect: true
+        expected_rows: 73
+        dim_cols: [门店]
+        metric_cols: [业绩, UPT, 单数, 客单价, 入机折扣, 实销折扣]
+
+      - key: storeDetailOutlet
+        cd_id: "ed3661a8128c6449bac31d3e"
+        cd_type: CHART
+        name: "奥莱单店明细（业绩）"
+        desc: "奥莱门店 业绩 / UPT / 客单价 / 折扣"
+        collect: true
+        expected_rows: 20
+        dim_cols: [门店]
+        metric_cols: [业绩, UPT, 单数, 客单价, 入机折扣, 实销折扣]
+
+      - key: storeTrendRegular
+        cd_id: "l629aae53e1a048439098814"
+        cd_type: CHART
+        name: "正价店铺明细（趋势）"
+        desc: "正价门店 × 扣券占比 / 实销折损（按货品类型拆分）"
+        collect: true
+        expected_rows: 73
+        dim_cols: [店铺]
+        metric_col_pattern: "{占比|实销折损}_{当年正价|当年减价|当年活动|住年旧货}"
+
+      - key: storeTrendOutlet
+        cd_id: "tfcce89fce25d49cbafd59be"
+        cd_type: CHART
+        name: "奥莱店铺明细（趋势）"
+        desc: "奥莱门店 × 扣券占比 / 实销折损（按货品类型拆分）"
+        collect: true
+        expected_rows: 20
+        dim_cols: [店铺]
+        metric_col_pattern: "{占比|实销折损}_{当年正价|当年减价|当年活动|住年旧货}"
+
+      # ── 下钻卡片（DRILL，可直接 API 拉取）───────────────────────────────────
+
+      - key: drillSellThroughStoreCategoryRegular
+        cd_id: "n539522feb848463d949392e"
+        cd_type: DRILL
+        name: "近六波动销率（正价 店铺×品类）"
+        desc: "正价门店 × 运营中类 × 波段，店铺维度动销率；下钻自 skcSellThroughCity"
+        collect: true
+        expected_rows: 918
+        dim_cols: [店铺, 运营中类]
+        rate_col_pattern: "{波段}_动销率_店铺"
+
+      - key: drillSellThroughStoreCategoryOutlet
+        cd_id: "x86a1b5bdd03a418f82a6053"
+        cd_type: DRILL
+        name: "近六波动销率（奥莱 店铺×品类）"
+        desc: "奥莱门店 × 运营中类 × 波段，店铺维度动销率；下钻自 skcSellThroughCity"
+        collect: true
+        expected_rows: 172
+        dim_cols: [店铺, 运营中类]
+        rate_col_pattern: "{波段}_动销率_店铺"
+
+      - key: drillCategoryBandSellThroughCity
+        cd_id: "d7ea0ea258c27486c8e5276f"
+        cd_type: DRILL
+        name: "品类×波段动销率（城市级）"
+        desc: "城市 × 运营中类 × 波段，城市与店铺维度动销率；下钻自 skcSellThroughCity"
+        collect: true
+        expected_rows: 394
+        channel_filter:
+          name: "管理渠道"
+          fd_id: "m84a6caeb08124f40aa22ae4"
+          ds_id: "k86182a257da84425af42667"
+          cd_id: "d7ea0ea258c27486c8e5276f"
+          source_cd_id: "q9ecb96ca7779403d8b27687"
+          values: ["自营", "托管", "联营"]
+        dim_cols: [城市, 运营中类]
+        metric_col_pattern: "{渠道}_{波段}_skc数_{销售|投放}"
+        rate_col_pattern:   "{渠道}_{波段}_动销率_{城市|店铺}"
+
+      - key: drillSkcRankingStore
+        cd_id: "bec6fabc41c3741278056110"
+        cd_type: DRILL
+        name: "正价 SKC 排名（店铺级）"
+        desc: "正价门店 SKC 件数与库存；下钻自 skcTop10"
+        collect: true
+        expected_rows: 94
+        dim_cols: [店铺]
+        metric_cols: [件数, 店存]

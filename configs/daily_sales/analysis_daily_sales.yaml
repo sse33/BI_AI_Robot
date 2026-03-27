@@ -1,0 +1,228 @@
+dashboard_id: daily_sales
+generated_at: '2026-03-26'
+version: 2
+analysis_context:
+  domain: 零售
+  subject: 线下销售业绩
+  granularity: 每日
+  audience: 区域经理、商品运营、销售管理
+  key_dimensions:
+  - 渠道
+  - 城市
+  - 门店
+  - SKC
+  - 波段
+  - 品类
+  key_metrics:
+  - 销售额
+  - 销售件数
+  - 折扣
+  - 动销率
+  - UPT
+  - 客单价
+sections:
+- id: overall_business_overview
+  title: 一、整体经营概览
+  intent: 宏观审视各渠道和核心城市的销售规模、效率和折扣水平，快速定位表现优异或落后的区域。
+  cards:
+  - dailySalesOverview
+  questions:
+  - 正价和奥莱渠道在核心城市的业绩贡献、店均产出和客单价有何差异？
+  - 哪些城市的实销折扣过低，需要重点关注？
+  - 对比不同城市，UPT（连带率）和店均单数表现如何？
+  alerts:
+  - id: low_discount_regular
+    label: 正价折扣预警
+    card: dailySalesOverview
+    metric: 正价_实销折扣
+    op: lte
+    value: 0.8
+    dim_cols:
+    - 渠道
+    - 城市
+    message: 城市 {城市} 的正价实销折扣低于80%，请关注。
+  output_hints:
+  - 渠道汇总报告：[渠道名] 总业绩 [X]元（[N]店，店均[Y]元），实销折扣 [Z%]
+  data_prep:
+  - card: dailySalesOverview
+    label: 渠道业绩汇总
+    mode: aggregate
+    group_by:
+    - 渠道
+    agg:
+    - col: 正价_业绩
+      func: sum
+    - col: 奥莱_业绩
+      func: sum
+    - col: 正价_店数
+      func: sum
+    - col: 奥莱_店数
+      func: sum
+  - card: dailySalesOverview
+    label: 折扣预警城市列表
+    mode: alert_only
+    alert_id: low_discount_regular
+- id: key_product_performance
+  title: 二、核心单品表现
+  intent: 识别畅销和滞销单品（SKC），分析其销售趋势、库存周转和动销情况，为商品调拨和补货提供依据。
+  cards:
+  - skcTop10
+  - drillSkcRankingStore
+  questions:
+  - 当前销售额最高的TOP10单品是哪些？它们的累销和近7日销售趋势如何？
+  - TOP单品的店存消化和周转情况是否健康？
+  - 某个畅销款在哪些店铺卖得最好，哪些店铺仍有大量库存？
+  output_hints:
+  - TOP10列表需包含商品图片，并高亮显示累销和店存周转周指标。
+  data_prep:
+  - card: skcTop10
+    label: TOP10 SKC核心指标
+    mode: full_rows
+    include_cols:
+    - skc编码
+    - 波段
+    - T+1销售_金额
+    - 历史销售件数_累销
+    - 周转率_店存周转周
+    - 周转率_店存消化率
+    sort_by: T+1销售_金额
+    sort_desc: true
+- id: channel_store_performance
+  title: 三、渠道与门店业绩
+  intent: 下钻到具体门店，对比正价和奥莱渠道下各门店的销售业绩、客单价和折扣水平，发现明星店铺和待改进店铺。
+  cards:
+  - storeDetailRegular
+  - storeDetailOutlet
+  questions:
+  - 正价渠道和奥莱渠道中，销售业绩排名前三的门店是哪些？
+  - 是否存在高业绩但折扣过低的门店？
+  - 对比同渠道门店，哪些店的UPT或客单价有明显提升空间？
+  data_prep:
+  - card: storeDetailRegular
+    label: 正价店业绩TOP5
+    mode: full_rows
+    sort_by: 业绩
+    sort_desc: true
+    row_filter: return row_num <= 5
+  - card: storeDetailOutlet
+    label: 奥莱店业绩TOP5
+    mode: full_rows
+    sort_by: 业绩
+    sort_desc: true
+    row_filter: return row_num <= 5
+- id: sales_structure_analysis
+  title: 四、销售结构分析
+  intent: 分析不同渠道、城市和门店的销售构成，评估当年新品、旧货及不同品类的销售贡献和折扣健康度。
+  cards:
+  - salesTrend
+  - storeTrendRegular
+  - storeTrendOutlet
+  - categoryStructureRegular
+  - categoryStructureOutlet
+  questions:
+  - 整体来看，当年正价货品、活动货品和过季旧货的销售占比及实销折损分别是多少？
+  - 哪些门店的旧货销售占比较高，可能影响品牌形象或新品销售？
+  - 在正价和奥莱渠道，核心运营品类的销售贡献（扣券后）和吊牌额占比有何不同？
+  alerts:
+  - id: old_stock_high_ratio
+    label: 旧货占比预警
+    card: storeTrendRegular
+    metric: 占比_住年旧货
+    op: gte
+    value: 0.3
+    dim_cols:
+    - 店铺
+    message: 正价店 {店铺} 的旧货销售占比超过30%，请关注。
+  data_prep:
+  - card: salesTrend
+    label: 城市销售结构概览
+    mode: full_rows
+    exclude_cols: []
+  - card: storeTrendRegular
+    label: 旧货占比预警门店
+    mode: alert_only
+    alert_id: old_stock_high_ratio
+- id: product_sell_through_analysis
+  title: 五、商品动销分析
+  intent: 深入分析各波段货品在不同城市、门店和品类层级的动销表现，识别动销机会与风险，指导货品运营策略。
+  cards:
+  - skcSellThroughCity
+  - skcSellThroughStoreRegular
+  - skcSellThroughStoreOutlet
+  - drillSellThroughStoreCategoryRegular
+  - drillSellThroughStoreCategoryOutlet
+  - drillCategoryBandSellThroughCity
+  questions:
+  - 最新波段（如26B_3Y）货品在哪些城市的动销率最高？哪些城市较低？
+  - 对于某个重点城市，哪些门店的整体动销表现最好？
+  - 下钻到具体品类，是哪个品类的哪个波段货品拉低了整体动销率？
+  - 对比正价和奥莱，同一波段货品的动销率表现有何差异？
+  output_hints:
+  - 在城市动销率表格中，使用热力图高亮显示不同波段的动销率高低。
+  data_prep:
+  - card: skcSellThroughCity
+    label: 城市最新波段动销率概览
+    mode: full_rows
+    include_cols:
+    - 城市
+    - 正价_26B_3Y_动销率_城市
+    - 奥莱_26B_3Y_动销率_城市
+    - 正价_26B_3X_动销率_城市
+    - 奥莱_26B_3X_动销率_城市
+    sort_by: 正价_26B_3Y_动销率_城市
+    sort_desc: true
+prompts:
+  system: '你是赫基集团零售业务高级数据分析师。
+
+    输出风格：数字密集、结论前置、每句话都有具体数值支撑，禁止泛泛而谈。
+
+    引用数据时采用紧凑内嵌格式，如：自营广佛正价54,916（5店，店均10,983，UPT 3.04，客单1,961，折扣82.8%）。
+
+    直接输出报告正文，不得有任何开场白、确认语或结束语。
+
+    '
+  output_format: '请按以下八节输出日报：
+
+
+    一、核心结论（≤3条，每条一句话含关键数字，覆盖：整体量级、最大结构问题、最紧迫风险）
+
+
+    二、关键指标证据（8个，格式：【指标名】具体值→一句话含义）
+
+    必须含：正价/奥莱整体规模（业绩+店数+店均+UPT+客单+折扣）、最强/最弱城市对比、折扣异常城市、新旧货吊牌vs销售占比差、TOP3滞销中类（含吊牌%vs销售%差值）、TOP10断码状态、压力最大波段+最低城市动销率
+
+
+    三、结构诊断
+
+    1. 渠道：自营/托管/联营各自 业绩/店均/折扣，哪个渠道是正价主引擎/奥莱主引擎
+
+    2. 城市：最强2城（内嵌数据+原因）、最弱2城（内嵌数据+原因）、调拨承接候选
+
+    3. 品类：新旧货吊牌vs销售占比差值、TOP3畅销/滞销中类（含占比）、最危险波段
+
+
+    四、TOP10 SKC结论（波段/品类/价格带分布；断码款逐一给出48h补货或陈列核查指令）
+
+
+    五、近六波动销（每波段列出所有城市具体动销率；按南区/北区/中西部分区汇总；点名调拨出去的城市×波段→调拨目的地）
+
+
+    六、城市优先级
+
+    🔴红区（2-3城）：问题类型（动销/价盘/客单）+ 具体指标值
+
+    🟡黄区（2-3城）：观察重点 + 升红触发条件（含阈值）
+
+    🟢绿区（2-3城）：核心优势 + 是否可作调拨承接或打法模板
+
+
+    七、执行动作（4条，格式：[方向] 动作→时限→量化目标，覆盖：调拨补货/陈列连带/折扣管控/品类结构）
+
+
+    八、复盘指标（3个，Markdown表格：指标名|当前值|下次目标值|监控原因）
+
+    '
+  global_output_rules:
+  - 每节数字必须内嵌在叙述句中，格式如：城市名（N店，店均X，UPT X.XX，客单X，折X折）
+  - 执行动作必须含：[方向] 具体动作→时限→量化目标（含数字）
+  - 禁止使用「较高」「偏低」「有所」等无数字的模糊表述

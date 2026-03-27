@@ -1,0 +1,72 @@
+# 门店粒度分析框架元数据
+# 关联仪表板：reports_meta.yaml → alias: daily_sales
+# 分析粒度：门店级
+# 输出：daily_sales_store_YYYYMMDD.md，按需生成推送
+#
+# 与 analysis_city.yaml 共用同一份采集数据（manifest），只是分析切面不同
+
+report_alias: "daily_sales"
+report_level: "store"
+output_file_pattern: "daily_sales_store_{date}.md"
+feishu_push: false   # 默认不推送，按需触发
+
+sections:
+
+  - id: store_efficiency
+    title: "一、单店效率排名"
+    cards:
+      - storeDetailRegular
+      - storeDetailOutlet
+    questions:
+      - "正价门店按业绩排名，列出店均、UPT、客单价、实销折扣"
+      - "奥莱门店同上"
+      - "低效门店（正价店均<3000）逐店诊断：是否折扣过低/UPT偏低/客单偏低"
+    alerts:
+      - id: store_low_efficiency
+        label: "低效门店"
+        card: storeDetailRegular
+        metric: 业绩
+        op: lt
+        value: 3000
+        dim_cols: [门店]
+        message: "单店业绩<3000，需结合折扣和UPT判断是客流不足还是货品问题"
+    output_hints:
+      - "格式：门店名（业绩X，UPT X.XX，客单X，折X折）"
+      - "正价和奥莱分开列示"
+
+  - id: store_product_mix
+    title: "二、门店货品结构"
+    cards:
+      - storeTrendRegular
+      - storeTrendOutlet
+    questions:
+      - "各门店当年正价/减价/活动/旧货的扣券占比结构，识别货品结构异常门店"
+      - "各门店各货品类型实销折损率，识别折损异常门店"
+    output_hints:
+      - "重点输出货品结构偏离均值>10%的门店"
+      - "格式：门店名（旧货占比X%，正价折损X折，旧货折损X折）"
+
+  - id: sellthrough_store
+    title: "三、波段动销（门店视角）"
+    cards:
+      - skcSellThroughStoreRegular
+      - skcSellThroughStoreOutlet
+      - drillSellThroughStoreCategoryRegular
+      - drillSellThroughStoreCategoryOutlet
+    questions:
+      - "正价门店各波段动销率，识别动销率持续偏低的门店"
+      - "奥莱门店同上"
+      - "品类×门店动销率（下钻），识别特定品类在特定门店的动销瓶颈"
+      - "给出定向补货或调货建议"
+    alerts:
+      - id: store_sellthrough_warning
+        label: "门店动销预警"
+        card: skcSellThroughStoreRegular
+        metric: "_动销率_店铺"
+        op: lt
+        value: 0.10
+        dim_cols: [店铺]
+        message: "门店动销率<10%，需结合品类下钻判断是货品问题还是陈列问题"
+    output_hints:
+      - "按门店列出各波段动销率，预警门店用 ⚠️ 标注"
+      - "品类下钻只列出动销率<10%的品类×门店组合"

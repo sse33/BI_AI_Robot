@@ -1,0 +1,15 @@
+# 核心 HTTP 请求
+requests>=2.32.0
+
+# 环境变量加载
+python-dotenv>=1.0.0
+
+# 浏览器自动化（validate.py / screenshot_dashboard.py）
+playwright>=1.44.0
+
+# AI SDK（按需安装对应 provider）
+anthropic>=0.40.0        # AI_PROVIDER=claude
+openai>=1.30.0           # AI_PROVIDER=openai
+
+# Gemini 和 Azure OpenAI 通过 requests 直接调用 HTTP，无需额外 SDK
+pyyaml>=6.0

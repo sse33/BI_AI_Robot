@@ -1,0 +1,60 @@
+# generate_analysis_prompt.yaml
+#
+# generate_analysis.py 调用 AI 时使用的元提示词配置。
+# 修改此文件即可调整分析框架的生成逻辑，无需改动 Python 代码。
+
+system: |
+  你是一名资深的 BI 数据分析架构师，擅长从仪表板卡片元数据中深度挖掘业务洞察，设计逻辑严谨且实用的结构化分析框架。
+  你需要结合业务语义、数据特征和分析目标，确保框架全面覆盖所有卡片，同时避免冗余。
+  你的输出必须是合法的 YAML 格式，不包含任何解释文字或额外内容。
+
+requirements:
+  - "根据卡片的业务语义和数据特征自然分组为若干分析章节（sections），章节数由内容复杂度决定，通常3-8个，避免过度细分或合并"
+  - "每张卡片必须归属至少一个章节，不得遗漏；优先归属最相关的章节，若有多个相关则可归属多个；如果某张卡片确实不适合纳入任何章节，必须在 analysis_context.excluded_cards 字段中列出该卡片的 key 及忽略原因（格式：{key: '卡片key', reason: '原因'}），不得静默忽略"
+  - "每节包含：id（英文标识符）、title（中文带序号，如'一、...'）、intent（一句话清晰描述分析意图）、cards（关联卡片key列表）、questions（2-4个具体、可操作的分析问题）、alerts（可选预警规则，基于关键指标设置）、output_hints（输出格式和展示要求）、data_prep（数据处理规则，确保数据量合理）"
+  - "data_prep.mode 只能是：full_rows / aggregate / alert_only；选择模式时优先考虑数据效率和分析需求"
+  - "aggregate 模式需要指定 group_by（分组字段）和 agg（聚合函数：sum / weighted_avg / count / avg / max / min）"
+  - "full_rows 模式可配置 include_cols / exclude_cols / row_filter / sort_by / sort_desc，以优化数据展示"
+  - "alerts 应基于业务阈值设置，包含明确的触发条件和消息模板"
+  - "questions 应聚焦于业务价值，避免泛化问题；优先考虑趋势、对比、异常和洞察"
+  - "同时输出 analysis_context 块：domain（业务领域）、subject（分析主题）、granularity（数据粒度）、audience（目标受众）、key_dimensions（关键维度）、key_metrics（关键指标）"
+
+schema_example: |
+  sections:
+    - id: channel_city_performance
+      title: "一、渠道&城市业绩总览"
+      intent: "评估各渠道和城市的销售规模、效率与折扣健康度"
+      cards: [dailySalesOverview]
+      questions:
+        - "分渠道对比正价和奥莱的业绩总量、店均、UPT、客单价、实销折扣"
+      alerts:
+        - id: discount_warning
+          label: "折扣预警"
+          card: dailySalesOverview
+          metric: 正价_实销折扣
+          op: lte
+          value: 0.70
+          dim_cols: [渠道, 城市]
+          message: "正价实销折扣≤70%，逐城市点名"
+      output_hints:
+        - "渠道汇总用紧凑格式：渠道名 正价X元（N店，店均X）"
+      data_prep:
+        - card: dailySalesOverview
+          label: "渠道汇总（aggregate示例）"
+          mode: aggregate
+          group_by: [渠道]
+          agg:
+            - col: 正价_业绩
+              func: sum
+            - col: 正价_店数
+              func: sum
+        - card: skcTop10
+          label: "TOP10明细（full_rows示例）"
+          mode: full_rows
+          exclude_cols: [照片]
+          sort_by: 历史销售件数_累销
+          sort_desc: true
+        - card: dailySalesOverview
+          label: "折扣预警行（alert_only示例）"
+          mode: alert_only
+          alert_id: discount_warning

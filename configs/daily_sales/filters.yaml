@@ -1,0 +1,334 @@
+dashboard_id: daily_sales
+generated_at: '2026-03-26T09:52:27'
+filters:
+- cd_id: qe0048227348142ea9bf122b
+  name: 价格类别
+  selector_type: DS_ELEMENTS
+  split_collect: false
+  linked_cards:
+  - cd_id: k02a7d3097d94489381bbed7
+    filter_template:
+      cd_id: k02a7d3097d94489381bbed7
+      ds_id: je2dbac4d27eb4c87aab0f15
+      fd_id: h52038d1151c645279da48ad
+      fd_type: STRING
+      filter_type: IN
+      name: 商品价格类别I
+      source_cd_id: qe0048227348142ea9bf122b
+  source:
+    ds_id: je2dbac4d27eb4c87aab0f15
+    fd_id: h52038d1151c645279da48ad
+    field_name: 商品价格类别I
+  known_values:
+  - 当年正价
+  - 当年减价
+  - 当年专供
+  - 旧货
+- cd_id: m13b55378629a4d47b806a36
+  name: 城市
+  selector_type: DS_ELEMENTS
+  split_collect: false
+  linked_cards:
+  - cd_id: k02a7d3097d94489381bbed7
+    filter_template:
+      cd_id: k02a7d3097d94489381bbed7
+      ds_id: je2dbac4d27eb4c87aab0f15
+      fd_id: c01bda759a9834f67883d499
+      fd_type: STRING
+      filter_type: IN
+      name: 管理城市
+      source_cd_id: m13b55378629a4d47b806a36
+  source:
+    ds_id: je2dbac4d27eb4c87aab0f15
+    fd_id: c01bda759a9834f67883d499
+    field_name: 管理城市
+  known_values:
+  - 东北
+  - 华北
+  - 华东
+  - 华中
+  - 华南
+  - 西北
+  - 西南
+  - ''
+- cd_id: d987ad9bedf1042f591b3fa2
+  name: 排名口径
+  selector_type: PARAMETER
+  split_collect: false
+  linked_cards: []
+  options:
+  - 金额
+  - 件数
+- cd_id: a8a3b106e895148728f2494d
+  name: 城市
+  selector_type: DS_ELEMENTS
+  split_collect: false
+  linked_cards:
+  - cd_id: cc9cdfd9a603d427c9292b80
+    filter_template:
+      cd_id: cc9cdfd9a603d427c9292b80
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: pb39b585095244880bb0c499
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: a8a3b106e895148728f2494d
+  - cd_id: n078e9c5ad540455889f3216
+    filter_template:
+      cd_id: n078e9c5ad540455889f3216
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: pb39b585095244880bb0c499
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: a8a3b106e895148728f2494d
+  source:
+    ds_id: f8cd8b508caf943a1872a272
+    fd_id: pb39b585095244880bb0c499
+    field_name: 城市
+  known_values: []
+- cd_id: b0d0c89121f994b92aa3ec7e
+  name: 城市
+  selector_type: DS_ELEMENTS
+  split_collect: false
+  linked_cards:
+  - cd_id: f88647253435141e8a88cac8
+    filter_template:
+      cd_id: f88647253435141e8a88cac8
+      ds_id: k86182a257da84425af42667
+      fd_id: i7514d36cbd334365a64e1a0
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: b0d0c89121f994b92aa3ec7e
+  - cd_id: d7ea0ea258c27486c8e5276f
+    filter_template:
+      cd_id: d7ea0ea258c27486c8e5276f
+      ds_id: k86182a257da84425af42667
+      fd_id: i7514d36cbd334365a64e1a0
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: b0d0c89121f994b92aa3ec7e
+  - cd_id: v0cfbd5c1128440d7a057eb5
+    filter_template:
+      cd_id: v0cfbd5c1128440d7a057eb5
+      ds_id: k86182a257da84425af42667
+      fd_id: i7514d36cbd334365a64e1a0
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: b0d0c89121f994b92aa3ec7e
+  - cd_id: n539522feb848463d949392e
+    filter_template:
+      cd_id: n539522feb848463d949392e
+      ds_id: k86182a257da84425af42667
+      fd_id: i7514d36cbd334365a64e1a0
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: b0d0c89121f994b92aa3ec7e
+  - cd_id: v44fb983c2df94ee0a6269e9
+    filter_template:
+      cd_id: v44fb983c2df94ee0a6269e9
+      ds_id: k86182a257da84425af42667
+      fd_id: i7514d36cbd334365a64e1a0
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: b0d0c89121f994b92aa3ec7e
+  - cd_id: x86a1b5bdd03a418f82a6053
+    filter_template:
+      cd_id: x86a1b5bdd03a418f82a6053
+      ds_id: k86182a257da84425af42667
+      fd_id: i7514d36cbd334365a64e1a0
+      fd_type: STRING
+      filter_type: IN
+      name: 城市
+      source_cd_id: b0d0c89121f994b92aa3ec7e
+  source:
+    ds_id: k86182a257da84425af42667
+    fd_id: i7514d36cbd334365a64e1a0
+    field_name: 城市
+  known_values: []
+- cd_id: q9ecb96ca7779403d8b27687
+  name: 渠道
+  selector_type: DS_ELEMENTS
+  split_collect: true
+  linked_cards:
+  - cd_id: k02a7d3097d94489381bbed7
+    filter_template:
+      cd_id: k02a7d3097d94489381bbed7
+      ds_id: je2dbac4d27eb4c87aab0f15
+      fd_id: d1f2cf6983ff7469b8353fd2
+      fd_type: STRING
+      filter_type: IN
+      name: 渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: m13b55378629a4d47b806a36
+    filter_template:
+      cd_id: m13b55378629a4d47b806a36
+      ds_id: je2dbac4d27eb4c87aab0f15
+      fd_id: d1f2cf6983ff7469b8353fd2
+      fd_type: STRING
+      filter_type: IN
+      name: 渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: a8a3b106e895148728f2494d
+    filter_template:
+      cd_id: a8a3b106e895148728f2494d
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: h30502466dec9415f8e61359
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: b0d0c89121f994b92aa3ec7e
+    filter_template:
+      cd_id: b0d0c89121f994b92aa3ec7e
+      ds_id: k86182a257da84425af42667
+      fd_id: m84a6caeb08124f40aa22ae4
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: c1c8c6067cae54b50a26e51f
+    filter_template:
+      cd_id: c1c8c6067cae54b50a26e51f
+      ds_id: f3e70e241530d4c41af12edd
+      fd_id: d8e77ae4a37464b0291a9d4f
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道名称_终端属性
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: cc9cdfd9a603d427c9292b80
+    filter_template:
+      cd_id: cc9cdfd9a603d427c9292b80
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: h30502466dec9415f8e61359
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: ed3661a8128c6449bac31d3e
+    filter_template:
+      cd_id: ed3661a8128c6449bac31d3e
+      ds_id: f3e70e241530d4c41af12edd
+      fd_id: d8e77ae4a37464b0291a9d4f
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道名称_终端属性
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: f88647253435141e8a88cac8
+    filter_template:
+      cd_id: f88647253435141e8a88cac8
+      ds_id: k86182a257da84425af42667
+      fd_id: m84a6caeb08124f40aa22ae4
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: d7ea0ea258c27486c8e5276f
+    filter_template:
+      cd_id: d7ea0ea258c27486c8e5276f
+      ds_id: k86182a257da84425af42667
+      fd_id: m84a6caeb08124f40aa22ae4
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: l629aae53e1a048439098814
+    filter_template:
+      cd_id: l629aae53e1a048439098814
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: h30502466dec9415f8e61359
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: n078e9c5ad540455889f3216
+    filter_template:
+      cd_id: n078e9c5ad540455889f3216
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: h30502466dec9415f8e61359
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: peaee175ceeb24483995edf1
+    filter_template:
+      cd_id: peaee175ceeb24483995edf1
+      ds_id: f3e70e241530d4c41af12edd
+      fd_id: d8e77ae4a37464b0291a9d4f
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道名称_终端属性
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: tfcce89fce25d49cbafd59be
+    filter_template:
+      cd_id: tfcce89fce25d49cbafd59be
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: h30502466dec9415f8e61359
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: v0cfbd5c1128440d7a057eb5
+    filter_template:
+      cd_id: v0cfbd5c1128440d7a057eb5
+      ds_id: k86182a257da84425af42667
+      fd_id: m84a6caeb08124f40aa22ae4
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: n539522feb848463d949392e
+    filter_template:
+      cd_id: n539522feb848463d949392e
+      ds_id: k86182a257da84425af42667
+      fd_id: m84a6caeb08124f40aa22ae4
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: v44fb983c2df94ee0a6269e9
+    filter_template:
+      cd_id: v44fb983c2df94ee0a6269e9
+      ds_id: k86182a257da84425af42667
+      fd_id: m84a6caeb08124f40aa22ae4
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: x86a1b5bdd03a418f82a6053
+    filter_template:
+      cd_id: x86a1b5bdd03a418f82a6053
+      ds_id: k86182a257da84425af42667
+      fd_id: m84a6caeb08124f40aa22ae4
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  - cd_id: va60ffe8f39e94e2db7d1917
+    filter_template:
+      cd_id: va60ffe8f39e94e2db7d1917
+      ds_id: f8cd8b508caf943a1872a272
+      fd_id: h30502466dec9415f8e61359
+      fd_type: STRING
+      filter_type: IN
+      name: 管理渠道
+      source_cd_id: q9ecb96ca7779403d8b27687
+  source:
+    ds_id: f3e70e241530d4c41af12edd
+    fd_id: d8e77ae4a37464b0291a9d4f
+    field_name: 管理渠道名称_终端属性
+  known_values:
+  - 自营
+  - 托管
+  - 联营
+- cd_id: kd35d970e8b8444b1ab9be54
+  name: 日期
+  selector_type: CALENDAR
+  split_collect: false
+  linked_cards: []
+  default_macro: '{{{yesterday}}}'

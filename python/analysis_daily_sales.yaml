@@ -1,0 +1,153 @@
+dashboard_id: daily_sales
+generated_at: '2026-03-26'
+version: 1
+analysis_context:
+  domain: 零售
+  subject: 线下销售业绩
+  granularity: 每日
+  audience: 区域经理、运营团队、商品规划
+  key_dimensions:
+  - 渠道
+  - 城市
+  - 门店
+  - SKC
+  - 波段
+  - 品类
+  key_metrics:
+  - 销售金额
+  - 销售件数
+  - 动销率
+  - 折扣
+  - UPT
+  - 客单价
+sections:
+- id: overall_performance_overview
+  title: 一、总体业绩概览
+  intent: 快速掌握各渠道和核心城市的整体销售规模、效率和折扣水平。
+  cards:
+  - dailySalesOverview
+  - salesTrend
+  questions:
+  - 今日正价和奥莱渠道的业绩、店均、UPT、客单价分别是多少？
+  - 哪些城市的正价店均业绩最高？哪些最低？
+  - 各渠道和城市的销售策略结构（如新品/旧货占比、折损情况）有何差异？
+  - 是否存在实销折扣过低的城市需要关注？
+  alerts:
+  - id: low_avg_sales_alert
+    label: 低店均预警
+    card: dailySalesOverview
+    metric: 正价_店均业绩
+    op: lt
+    value: 5000
+    dim_cols:
+    - 城市
+    message: 城市 {城市} 正价店均业绩低于5000，需关注。
+  output_hints:
+  - 渠道汇总用紧凑格式：渠道名 正价X元（N店，店均X，折扣X%）
+  - 点名业绩排名前三和后三的城市。
+  data_prep:
+  - card: dailySalesOverview
+    label: 渠道与城市业绩
+    mode: full_rows
+    sort_by: 正价_业绩
+    sort_desc: true
+  - card: salesTrend
+    label: 渠道与城市策略
+    mode: full_rows
+- id: store_performance_ranking
+  title: 二、门店业绩排行与结构
+  intent: 识别高产和低效门店，并分析其销售构成，定位问题或成功经验。
+  cards:
+  - storeDetailRegular
+  - storeDetailOutlet
+  - storeTrendRegular
+  - storeTrendOutlet
+  questions:
+  - 正价和奥莱渠道中，业绩排名前五和后五的门店是哪些？
+  - 高业绩门店和低业绩门店在新品、旧货销售占比上有何差异？
+  - 哪些门店的实销折损较高，主要由哪类货品导致？
+  data_prep:
+  - card: storeDetailRegular
+    label: 正价店业绩排行
+    mode: full_rows
+    sort_by: 业绩
+    sort_desc: true
+  - card: storeDetailOutlet
+    label: 奥莱店业绩排行
+    mode: full_rows
+    sort_by: 业绩
+    sort_desc: true
+  - card: storeTrendRegular
+    label: 正价店销售结构
+    mode: full_rows
+  - card: storeTrendOutlet
+    label: 奥莱店销售结构
+    mode: full_rows
+- id: product_sell_through_analysis
+  title: 三、货品动销分析
+  intent: 评估各波段、各品类货品在不同城市和店铺层级的动销情况，识别库存风险和机会。
+  cards:
+  - skcSellThroughCity
+  - skcSellThroughStoreRegular
+  - skcSellThroughStoreOutlet
+  - drillSellThroughStoreCategoryRegular
+  - drillSellThroughStoreCategoryOutlet
+  - drillCategoryBandSellThroughCity
+  questions:
+  - 哪些城市的整体动销率较高？哪些波段的货品在这些城市卖得好？
+  - 哪些店铺的特定品类或波段动销率显著偏低，存在库存积压风险？
+  - 对比正价和奥莱渠道，同品类货品的动销表现有何差异？
+  alerts:
+  - id: low_sell_through_alert
+    label: 低动销预警
+    card: skcSellThroughStoreRegular
+    metric: 26A_2Y_动销率_店铺
+    op: lte
+    value: 0.1
+    dim_cols:
+    - 店铺
+    message: 店铺 {店铺} 的 26A_2Y 波段动销率低于10%，请关注。
+  data_prep:
+  - card: skcSellThroughCity
+    label: 城市-波段动销
+    mode: full_rows
+  - card: skcSellThroughStoreRegular
+    label: 正价店-波段动销
+    mode: full_rows
+    sort_by: 26A_2Y_动销率_店铺
+    sort_desc: false
+  - card: skcSellThroughStoreOutlet
+    label: 奥莱店-波段动销
+    mode: full_rows
+  - card: drillSellThroughStoreCategoryRegular
+    mode: alert_only
+  - card: drillSellThroughStoreCategoryOutlet
+    mode: alert_only
+  - card: drillCategoryBandSellThroughCity
+    mode: alert_only
+- id: top_product_and_category_structure
+  title: 四、畅销商品与品类结构
+  intent: 识别全国范围内的畅销单品（SKC），并分析核心品类的销售贡献和库存占比。
+  cards:
+  - skcTop10
+  - categoryStructureRegular
+  - categoryStructureOutlet
+  - drillSkcRankingStore
+  questions:
+  - 今日全国销售额最高的SKC是哪些？它们属于哪个波段和产品线？
+  - 正价渠道中，哪些品类的销售贡献（销售扣券%）远高于其库存占比（总进吊牌%）？
+  - 奥莱渠道的主要销售贡献来自于新货还是旧货？
+  - 哪些店铺贡献了畅销SKC的主要销量？
+  data_prep:
+  - card: skcTop10
+    label: 畅销SKC排名
+    mode: full_rows
+  - card: categoryStructureRegular
+    label: 正价店品类结构
+    mode: full_rows
+  - card: categoryStructureOutlet
+    label: 奥莱店品类结构
+    mode: full_rows
+  - card: drillSkcRankingStore
+    label: 店铺SKC销售钻取
+    mode: alert_only

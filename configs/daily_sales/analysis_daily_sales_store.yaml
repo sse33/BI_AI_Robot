@@ -1,0 +1,228 @@
+dashboard_id: daily_sales
+analysis: store
+generated_at: '2026-03-27'
+version: 4
+analysis_context:
+  domain: 零售
+  subject: 线下门店每日销售分析
+  granularity: 门店
+  audience: 区域经理, 运营总监, 商品规划
+  key_dimensions:
+  - 门店
+  - 渠道
+  - 运营中类
+  - 波段
+  - 新/旧货
+  key_metrics:
+  - 业绩
+  - UPT
+  - 客单价
+  - 实销折扣
+  - 动销率
+  - 店存
+  - 销售结构占比
+  excluded_cards:
+  - key: skcTop10
+    reason: 分析粒度为SKC，非门店粒度
+  - key: dailySalesOverview
+    reason: 分析粒度为城市，非门店粒度
+  - key: skcSellThroughCity
+    reason: 分析粒度为城市，非门店粒度
+  - key: salesTrend
+    reason: 分析粒度为城市，非门店粒度
+  - key: drillCategoryBandSellThroughCity
+    reason: 分析粒度为城市，非门店粒度
+sections:
+- id: store_performance_overview
+  title: 一、门店业绩健康度诊断
+  intent: 快速识别高、低绩效门店，并诊断其核心销售指标（UPT、客单价、折扣）的健康状况。
+  cards:
+  - storeDetailRegular
+  - storeDetailOutlet
+  questions:
+  - 正价和奥莱渠道中，销售业绩排名前三和后三的门店分别是哪些？
+  - 是否存在业绩表现尚可，但UPT或客单价远低于渠道平均水平的门店？
+  - 哪些门店的实销折扣过低（例如低于8折），可能存在利润风险？
+  alerts:
+  - id: low_upt_alert
+    label: 低UPT预警
+    card: storeDetailRegular
+    metric: UPT
+    op: lte
+    value: 1.2
+    dim_cols:
+    - 门店
+    message: 请关注正价门店【{{门店}}】，其UPT（{{UPT}}）低于1.2，可能影响连带销售。
+  - id: high_discount_alert
+    label: 高折扣预警
+    card: storeDetailOutlet
+    metric: 实销折扣
+    op: lte
+    value: 0.5
+    dim_cols:
+    - 门店
+    message: 奥莱门店【{{门店}}】实销折扣（{{实销折扣}}）低于5折，需评估其盈利能力。
+  output_hints:
+  - 将正价店和奥莱店并排展示，按业绩降序排列，并高亮显示异常指标。
+  data_prep:
+  - card: storeDetailRegular
+    label: 正价店业绩排名
+    mode: full_rows
+    sort_by: 业绩
+    sort_desc: true
+  - card: storeDetailOutlet
+    label: 奥莱店业绩排名
+    mode: full_rows
+    sort_by: 业绩
+    sort_desc: true
+- id: store_sales_composition
+  title: 二、门店销售结构分析
+  intent: 分析各门店的销售构成，评估其对新品、旧货及不同品类的依赖程度，以优化商品策略。
+  cards:
+  - storeTrendRegular
+  - storeTrendOutlet
+  - categoryStructureRegular
+  - categoryStructureOutlet
+  questions:
+  - 哪些门店的旧货（住年旧货）销售占比较高，可能存在清库存压力或新品上新问题？
+  - 对比不同门店，核心品类（如外套、鞋）的销售贡献度是否存在显著差异？
+  - 结合销售吊牌占比和销售扣券占比，哪些门店的品类结构更健康？
+  alerts:
+  - id: old_stock_ratio_alert
+    label: 旧货占比预警
+    card: storeTrendRegular
+    metric: 占比_住年旧货
+    op: gte
+    value: 0.3
+    dim_cols:
+    - 店铺
+    message: 正价门店【{{店铺}}】旧货销售占比（{{占比_住年旧货}}）超过30%，请关注其货品结构。
+  output_hints:
+  - 使用堆叠条形图展示各门店的新/旧货销售占比，并附上明细表格。
+  - 以矩阵热力图形式，展示各门店在不同运营中类上的销售吊牌占比。
+  data_prep:
+  - card: storeTrendRegular
+    label: 正价店货品年限结构
+    mode: full_rows
+    sort_by: 占比_住年旧货
+    sort_desc: true
+  - card: categoryStructureRegular
+    label: 正价店品类结构汇总
+    mode: aggregate
+    group_by:
+    - 运营中类
+    agg:
+    - col: 销售扣券%
+      func: weighted_avg
+      weight_col: 销售吊牌%
+    - col: 销售吊牌%
+      func: sum
+- id: store_sell_through_health
+  title: 三、门店动销健康度诊断
+  intent: 下钻至门店-波段-品类层级，评估各门店的货品动销效率，识别滞销风险。
+  cards:
+  - skcSellThroughStoreRegular
+  - skcSellThroughStoreOutlet
+  - drillSellThroughStoreCategoryRegular
+  - drillSellThroughStoreCategoryOutlet
+  questions:
+  - 哪些门店在核心波段（如26A_4A）上的动销率显著低于平均水平？
+  - 对于动销率低的门店，具体是哪个运营中类的动销表现最差？
+  - 是否存在投放SKC数很多，但实际销售SKC数很少的门店-品类组合？
+  alerts:
+  - id: band_sell_through_alert
+    label: 核心波段动销预警
+    card: skcSellThroughStoreRegular
+    metric: 26A_4A_动销率_店铺
+    op: lte
+    value: 0.1
+    dim_cols:
+    - 店铺
+    message: 正价门店【{{店铺}}】核心波段26A_4A动销率（{{26A_4A_动销率_店铺}}）低于10%，存在滞销风险。
+  output_hints:
+  - 提供门店筛选器，联动展示该门店下各波段的动销率、投放数和销售数。
+  - 下钻后，以品类为行，各波段为列，展示动销率矩阵，并对低动销率单元格进行预警高亮。
+  data_prep:
+  - card: skcSellThroughStoreRegular
+    label: 正价店各波段动销率
+    mode: full_rows
+    sort_by: 26A_4A_动销率_店铺
+    sort_desc: false
+  - card: drillSellThroughStoreCategoryRegular
+    label: 指定门店的品类动销详情
+    mode: full_rows
+    row_filter: 店铺 == 'TOP1动销差门店'
+    sort_by: 26A_4A_动销率_店铺
+    sort_desc: false
+- id: key_skc_store_contribution
+  title: 四、重点SKC门店贡献度分析
+  intent: 从SKC视角反查，识别对重点单品（爆款或滞销款）销售或库存贡献最大的门店。
+  cards:
+  - drillSkcRankingStore
+  questions:
+  - 对于某款TOP10热销SKC，其销量主要由哪些门店贡献？是否存在明星店铺？
+  - 对于某款滞销SKC，其库存主要积压在哪些门店？
+  - 对比同一SKC在不同门店的销售和库存表现，能否发现可供推广的销售经验或需要优化的库存调拨机会？
+  output_hints:
+  - 输入SKC编码后，输出门店列表，包含销售件数和店存，并按销售件数降序排列。
+  data_prep:
+  - card: drillSkcRankingStore
+    label: 指定SKC的门店销售与库存排名
+    mode: full_rows
+    sort_by: 件数
+    sort_desc: true
+report_title_suffix: 门店粒度
+prompts:
+  system: '你是赫基集团零售门店运营高级数据分析师。
+
+    专注门店粒度：每家店铺的业绩、UPT、客单价、折扣、销售结构和折损必须有具体数值支撑。
+
+    输出风格：结论前置，数字密集，每句话都含具体数值，禁止使用"较高""偏低""有所"等无数字的模糊表述。
+
+    引用数据时采用紧凑内嵌格式，如：广州天环（业绩31,000，UPT 6.0，客单2,818，折扣56.6%）。
+
+    直接输出报告正文，不得有任何开场白、确认语或结束语。
+
+    '
+  output_format: '请按以下五节输出门店管理日报：
+
+
+    一、核心结论（≤3条，每条一句话含关键数字，覆盖：正价/奥莱整体规模、最突出的门店差距、最紧迫风险）
+
+
+    二、正价店业绩
+
+    1. 整体量级：正价合计业绩、店数、店均，与奥莱对比一句话
+
+    2. TOP5门店：业绩最高5家（格式：门店名（业绩X，UPT X.X，客单X，折扣XX%）），一句话点出共同成功因素
+
+    3. 需关注门店：业绩垫底3家 + 折扣低于65%的门店，逐一点名并给出一句诊断
+
+
+    三、奥莱店业绩
+
+    1. 整体量级：奥莱合计业绩、店数、店均
+
+    2. TOP3门店：业绩最高3家（格式同上）
+
+    3. 需关注门店：业绩垫底3家 + 折扣低于45%的门店，逐一点名并给出一句诊断
+
+
+    四、销售结构与折损诊断
+
+    1. 正价店：旧货占比最高3家（含占比）、当年正价折损最严重3家（含折损率），各一句诊断
+
+    2. 奥莱店：同上
+
+    3. 整体风险：一句话指出最需关注的库存/折损风险及建议行动
+
+
+    五、动销预警
+
+    1. 持续滞销门店：连续3波及以上动销率低于20%的门店，列出各波段动销率并给出一句建议
+
+    2. 高动销门店：最新波段动销率超过50%的门店，点名并说明是否具备调拨承接能力
+
+    '
+  global_output_rules:
+  - 每节数字必须内嵌在叙述句中，格式如：门店名（业绩X，UPT X.X，客单X，折扣XX%）

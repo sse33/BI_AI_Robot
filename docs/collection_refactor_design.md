@@ -7,7 +7,7 @@
 
 ## 核心目标
 
-从"赫基专用脚本"升级为"可接入任意观远仪表板的通用采集工具"。
+从"业务专用脚本"升级为"可接入任意观远仪表板的通用采集工具"。
 
 ---
 
@@ -18,7 +18,7 @@
 | 只读取第一个 report | `bi_card_fetcher.py` | `_load_meta()` 取 `reports[0]`，CARD_IDS 全局变量 |
 | 仪表板 URL 写死 | `validate.py` | `DASHBOARD_URL = "https://..."` |
 | 验证摘要写死卡片 key | `validate.py` | `report.get("dailySalesOverview")` 等 |
-| `channel_filter` 是业务特定逻辑 | `bi_card_fetcher.py` | 按渠道拆3次是赫基专属 |
+| `channel_filter` 是业务特定逻辑 | `bi_card_fetcher.py` | 按渠道拆3次是业务专属 |
 | 筛选器分拆维度写死 | `reports_meta.yaml` cards[] | `channel_filter` 字段冗余于 `public_filters` |
 
 ---
@@ -54,8 +54,8 @@ outputs/
 dashboards:
   - id: daily_sales
     name: "OCH线下每日销售报告"
-    dashboard_url: "https://bi.trendy-global.com/home/web-app/iXXXX"
-    pg_id: "e0be35cef643848f5b4105d8"
+    dashboard_url: "https://your-bi-domain.com/home/web-app/iXXXX"
+    pg_id: "YOUR_PAGE_GROUP_ID"
     enabled: true
     schedule: "daily"
 

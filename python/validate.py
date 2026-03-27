@@ -26,11 +26,11 @@ load_dotenv(ROOT_DIR / ".env")
 
 from bi_card_fetcher import GuanyuanClient, CARD_IDS, fetch_daily_report  # noqa: E402
 
-BASE_URL  = os.environ.get("GY_BASE_URL", "https://bi.trendy-global.com")
+BASE_URL  = os.environ.get("GY_BASE_URL", "")
 ACCOUNT   = os.environ.get("GY_ACCOUNT", "")
 PASSWORD  = os.environ.get("GY_PASSWORD", "")
 
-DASHBOARD_URL = "https://bi.trendy-global.com/home/web-app/i752edbfe9d7d48ef8da1cde"
+DASHBOARD_URL = os.environ.get("GY_DASHBOARD_URL", "")
 
 if not ACCOUNT or not PASSWORD:
     print("请在 .env 中设置 GY_ACCOUNT 和 GY_PASSWORD", file=sys.stderr)
@@ -110,7 +110,7 @@ async def get_dashboard_title_and_screenshot(cookie_str: str) -> str | None:
                     name, _, value = pair.partition("=")
                     cookie_objs.append({
                         "name": name, "value": value,
-                        "domain": "bi.trendy-global.com", "path": "/",
+                        "domain": BASE_URL.replace("https://", "").replace("http://", "").split("/")[0], "path": "/",
                     })
             await context.add_cookies(cookie_objs)
 

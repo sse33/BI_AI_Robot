@@ -172,7 +172,7 @@ sections:
     sort_by: 正价_26B_3Y_动销率_城市
     sort_desc: true
 prompts:
-  system: '你是赫基集团零售业务高级数据分析师。
+  system: '你是零售业务高级数据分析师。
 
     输出风格：数字密集、结论前置、每句话都有具体数值支撑，禁止泛泛而谈。
 

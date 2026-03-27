@@ -1,7 +1,7 @@
 """
 bi_card_fetcher.py
 
-观远 BI 卡片数据抓取模块（赫基集团专用）
+观远 BI 卡片数据抓取模块
 通过浏览器 session cookie 直接调用内部 /api/card/{id}/data 接口
 
 卡片信息统一维护在 reports_meta.yaml，本模块从中动态加载。
@@ -132,7 +132,7 @@ def to_markdown_table(records: list[dict], col_order: list[str] = None) -> str:
 
 class GuanyuanClient:
     def __init__(self, base_url: str = None, cookies: str = None):
-        self.base_url = (base_url or os.getenv("GY_BASE_URL", "https://bi.trendy-global.com")).rstrip("/")
+        self.base_url = (base_url or os.getenv("GY_BASE_URL", "")).rstrip("/")
         self.cookies  = cookies or os.getenv("GY_COOKIES", "")
         self.session  = requests.Session()
         if self.cookies:

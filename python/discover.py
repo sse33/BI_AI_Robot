@@ -30,7 +30,7 @@ ROOT_DIR    = Path(__file__).parent.parent
 CONFIGS_DIR = ROOT_DIR / "configs"
 load_dotenv(ROOT_DIR / ".env")
 
-BASE_URL = os.getenv("GY_BASE_URL", "https://bi.trendy-global.com")
+BASE_URL = os.getenv("GY_BASE_URL", "")
 ACCOUNT  = os.getenv("GY_ACCOUNT", "")
 PASSWORD = os.getenv("GY_PASSWORD", "")
 

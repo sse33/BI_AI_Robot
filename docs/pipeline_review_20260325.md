@@ -5,7 +5,7 @@
 ### 1. 数据收集 (`validate.py`)
 
 ```
-Playwright 自动登录 bi.trendy-global.com
+Playwright 自动登录 your-bi-domain.com
   → 提取 session cookie
   → GuanyuanClient (bi_card_fetcher.py)
       ├── 普通卡片：fetch_all_rows() 直接拉全量

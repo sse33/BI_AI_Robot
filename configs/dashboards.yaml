@@ -4,9 +4,9 @@
 
 dashboards:
   - id: daily_sales
-    name: "och线下每日销售报告（宣总看板）"
-    dashboard_url: "https://bi.trendy-global.com/home/web-app/i752edbfe9d7d48ef8da1cde"
-    pg_id: "e0be35cef643848f5b4105d8"
+    name: "线下每日销售报告"
+    dashboard_url: "https://your-bi-domain.com/home/web-app/YOUR_PAGE_ID"
+    pg_id: "YOUR_PAGE_GROUP_ID"
     enabled: true
     schedule: "daily"
     analysis_variants:

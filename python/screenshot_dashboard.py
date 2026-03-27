@@ -17,10 +17,10 @@ from playwright.async_api import async_playwright
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / ".env")
 
-BASE_URL    = os.environ.get("GY_BASE_URL", "https://bi.trendy-global.com")
+BASE_URL    = os.environ.get("GY_BASE_URL", "")
 ACCOUNT     = os.environ.get("GY_ACCOUNT", "")
 PASSWORD    = os.environ.get("GY_PASSWORD", "")
-DASHBOARD   = "https://bi.trendy-global.com/home/web-app/i752edbfe9d7d48ef8da1cde"
+DASHBOARD   = os.environ.get("GY_DASHBOARD_URL", "")
 OUT_DIR     = ROOT_DIR / "outputs"
 
 if not ACCOUNT or not PASSWORD:

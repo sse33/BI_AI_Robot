@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-双版本自动化日报系统，直接从观远 BI（Guanyuan BI）内部 API 抓取卡片数据，调用 AI 生成分析报告并推送飞书，供赫基集团（TRENDY GROUP）零售日报使用。
+双版本自动化日报系统，直接从观远 BI（Guanyuan BI）内部 API 抓取卡片数据，调用 AI 生成分析报告并推送飞书。
 
 ## 目录结构
 
@@ -68,7 +68,8 @@ node analyze.mjs              # AI 分析
 
 | 变量 | 用途 |
 |---|---|
-| `GY_BASE_URL` | `https://bi.trendy-global.com` |
+| `GY_BASE_URL` | 观远 BI 部署地址，如 `https://your-bi-domain.com` |
+| `GY_DASHBOARD_URL` | 仪表板完整 URL（截图和旧版 validate.py 使用）|
 | `GY_ACCOUNT` | 登录工号 |
 | `GY_PASSWORD` | 登录密码 |
 | `AI_PROVIDER` | `gemini` / `claude` / `azure` / `openai` |

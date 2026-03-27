@@ -173,7 +173,7 @@ sections:
     sort_desc: true
 report_title_suffix: 门店粒度
 prompts:
-  system: '你是赫基集团零售门店运营高级数据分析师。
+  system: '你是零售门店运营高级数据分析师。
 
     专注门店粒度：每家店铺的业绩、UPT、客单价、折扣、销售结构和折损必须有具体数值支撑。
 

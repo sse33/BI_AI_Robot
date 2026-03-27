@@ -39,10 +39,15 @@ AI_PROVIDER=claude python analyze.py
 AI_PROVIDER=azure  python analyze.py
 AI_PROVIDER=gemini python analyze.py   # 默认
 
-# 元数据发现与提示词生成
-python discover.py --dashboard daily_sales        # 发现仪表板卡片/筛选器 → cards.yaml / filters.yaml
+# 仪表板初始化（首次接入新看板）
+python discover.py --dashboard daily_sales           # 发现仪表板卡片/筛选器 → cards.yaml / filters.yaml
+python clarify.py --dashboard daily_sales            # 需求调研员：识别语义模糊卡片 → 交互式补全 business_description
 python generate_analysis.py --dashboard daily_sales  # AI 生成分析框架 → analysis_{id}.yaml
 python generate_prompt.py --dashboard daily_sales    # 渲染提示词 → configs/{id}/prompt_{id}.md
+
+# clarify.py 常用参数
+python clarify.py --dashboard daily_sales --provider claude  # 切换 AI provider
+python clarify.py --dashboard daily_sales --force            # 重新澄清所有卡片（含已有描述）
 ```
 
 ## 文件职责
@@ -52,6 +57,7 @@ python generate_prompt.py --dashboard daily_sales    # 渲染提示词 → confi
 | `bi_card_fetcher.py` | `GuanyuanClient`（cookie 认证）、`fetch_all_rows()`，纯 `requests`，不依赖 Playwright |
 | `collect.py` | Playwright 登录 → 提取 cookie → 并发采集所有卡片 → `outputs/{dashboard_id}/manifest_{YYYYMMDD}.json` |
 | `discover.py` | 调用页面 API 发现卡片/筛选器元数据 → `configs/{id}/cards.yaml` + `filters.yaml` |
+| `clarify.py` | 需求调研员：读 cards.yaml → AI 识别语义模糊卡片 → 交互式问答 → 写回 `business_description` |
 | `generate_analysis.py` | 读 cards.yaml → AI 推断分析意图 → `analysis_{id}.yaml`（analysis_context + sections） |
 | `generate_prompt.py` | 读 analysis yaml → 渲染 → `configs/{id}/prompt_{id}.md` |
 | `analyze.py` | 编排主流程：验证 → AI 分析 → 事实核查 → 飞书推送 |
@@ -72,9 +78,11 @@ BI_AI_Robot/
 │   ├── dashboards.yaml      # 所有仪表板注册表（enabled/id/name）
 │   ├── meta/
 │   │   ├── generate_analysis_prompt.yaml  # 架构师角色提示词（章节生成逻辑，全局通用）
-│   │   └── citations_prompt.yaml          # 数据核对员提示词（citations 格式与规则，全局通用）
+│   │   ├── clarify_prompt.yaml            # 需求调研员角色提示词（语义模糊判断 + 澄清问题，全局通用）
+│   │   ├── citations_prompt.yaml          # 数据核对员提示词（citations 格式与规则，全局通用）
+│   │   └── global_output_rules.yaml       # 全局输出规则（禁模糊表述、折扣换算、千位分隔符等）
 │   └── {dashboard_id}/
-│       ├── cards.yaml       # 卡片元数据（cd_id、key、collect_strategy、validate 规则）
+│       ├── cards.yaml       # 卡片元数据（cd_id、key、collect_strategy、validate 规则、business_description）
 │       ├── filters.yaml     # 筛选器元数据（known_values、linked_cards、split_collect）
 │       ├── analysis_{id}.yaml   # 分析框架（analysis_context + sections + prompts）
 │       └── prompt_{id}.md   # 渲染后的完整提示词（SYSTEM + USER 模板）
@@ -86,7 +94,26 @@ BI_AI_Robot/
 
 ## 系统角色与分析流程
 
-系统由三个角色和一条数据流水线构成：
+系统由四个角色和一条数据流水线构成。初始化阶段运行前三个角色，之后每日只运行角色二和三。
+
+### 初始化流程（新仪表板接入时运行一次）
+
+```
+discover.py → clarify.py → generate_analysis.py → generate_prompt.py
+```
+
+### 角色零：需求调研员（初始化阶段，一次性）
+识别卡片中语义模糊的项目，与业务方交互确认真实业务含义，写入 `business_description`。
+提示词：`configs/meta/clarify_prompt.yaml`（全局通用）
+
+```
+cards.yaml（discover.py 输出）
+    ↓ [需求调研员] clarify.py
+    ↓ AI 识别模糊卡片 → 终端交互式问答
+cards.yaml（追加 business_description 字段）
+```
+
+**判断语义模糊的标准**：名称重复（同仪表板多张同名）、名称技术化（字段拼接/系统代码）、名称过于通用（无功能描述）、名称与列结构不一致。
 
 ### 角色一：BI 数据分析架构师（一次性配置）
 读懂仪表板元数据，规划分析结构——章节划分、数据压缩方式、预警规则。
@@ -126,10 +153,12 @@ factcheck_{stamp}.md（核查报告）
 ```
 
 ### 职责边界
+- **需求调研员**：决定"每张卡片的业务含义"——初始化时一次性运行，支持增量补充（`--force` 全量重跑）
 - **架构师**：决定"分析什么、怎么组织数据"——仪表板结构变化时重跑
-- **高级分析师**：决定"怎么写报告、什么风格"——每日自动运行，prompts 块只能手工维护
+- **高级分析师**：决定"怎么写报告、什么风格"——每日自动运行，`prompts` 块只能手工维护（generate_analysis.py 不会覆盖）
 - **数据核对员**：决定"数字是否准确"——随分析师报告自动触发，citations_prompt 全局通用
 - **提示词分层**：全局通用放 `configs/meta/`，仪表板特定放 `configs/{dashboard_id}/`
+- **全局输出规则**：`global_output_rules.yaml` 由 analyze.py 自动加载并前置合并到仪表板特有规则，无需在每个 analysis yaml 重复
 
 ## 关键注意事项
 

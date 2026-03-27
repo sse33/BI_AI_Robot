@@ -16,10 +16,12 @@ BI_AI_Robot/
 │   ├── screenshot_dashboard.mjs # Puppeteer 截图看板
 │   ├── analyze.mjs              # AI 分析 → 报告 + 飞书推送
 │   └── package.json
-├── python/                      # Python 版本（主力迁移目标）
+├── python/                      # Python 版本（主力）
 │   ├── bi_card_fetcher.py       # 核心：cookie 认证，抓取卡片数据
-│   ├── validate.py              # Playwright 登录 → 抓取 → outputs/manifest_test.json
-│   ├── screenshot_dashboard.py  # Playwright 截图看板
+│   ├── collect.py               # Playwright 登录 → 并发采集 → outputs/{id}/manifest_{YYYYMMDD}.json
+│   ├── discover.py              # 发现仪表板卡片/筛选器元数据 → cards.yaml / filters.yaml
+│   ├── clarify.py               # 需求调研员：交互式补全卡片 business_description
+│   ├── generate_analysis.py     # AI 生成分析框架 → analysis_{id}.yaml
 │   ├── analyze.py               # AI 分析 → 报告 + 飞书推送
 │   └── requirements.txt
 ├── outputs/                     # 共享输出目录（不提交内容）
@@ -42,9 +44,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 playwright install chromium   # 首次需要
 
-python validate.py            # 登录 → 抓取全部卡片 → outputs/manifest_test.json
-python screenshot_dashboard.py  # 截图看板
-python analyze.py             # AI 分析 → outputs/analysis_report_*.md → 飞书推送
+# 日常运行
+python collect.py             # 登录 → 采集所有仪表板 → outputs/{id}/manifest_{YYYYMMDD}.json
+python analyze.py             # AI 分析 → outputs/{id}/analysis_report_*.md → 飞书推送
+python analyze.py --no-feishu # 跳过飞书（调试用）
+
+# 新仪表板初始化
+python discover.py --dashboard daily_sales
+python clarify.py --dashboard daily_sales
+python generate_analysis.py --dashboard daily_sales
 ```
 
 **Node.js 版本：**
@@ -72,7 +80,7 @@ node analyze.mjs              # AI 分析
 
 ## 架构与关键设计
 
-**数据流：** `validate.py` 登录并抓取 → `outputs/manifest_test.json` → `analyze.py` 读取并分析
+**数据流：** `collect.py` 登录并采集 → `outputs/{id}/manifest_{YYYYMMDD}.json` → `analyze.py` 读取并分析
 
 **AI 调用（`analyze.py`）**：
 - Gemini 使用流式 SSE（`streamGenerateContent?alt=sse`），避免企业代理因响应慢导致的 socket 超时
@@ -98,7 +106,16 @@ node analyze.mjs              # AI 分析
 | `SKC_SELL_THROUGH` | 近六波 SKC 动销率 | — |
 | `UNKNOWN_CARD` | 待识别 | — |
 
-## 待完成任务
+## 初始化流程
 
-1. **识别 `UNKNOWN_CARD`**（`n078e9c5ad540455889f3216`）：运行 `validate.py` 后查看 `manifest_test.json` 中 `unknownCard` 字段的列名和前5行，对照看板确认模块用途
-2. **`--no-feishu` 标志**：`analyze.py` 当前无法临时跳过飞书推送（需清空 env var 或加命令行参数）
+新仪表板接入时，按以下顺序运行一次：
+
+```
+discover.py   → cards.yaml（卡片元数据）
+clarify.py    → cards.yaml（补全 business_description）
+generate_analysis.py → analysis_{id}.yaml（分析框架，含 prompts）
+```
+
+之后每日只运行：`collect.py` → `analyze.py`
+
+详细说明见 `python/CLAUDE.md`。

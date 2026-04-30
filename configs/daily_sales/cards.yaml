@@ -1,5 +1,5 @@
 dashboard_id: daily_sales
-generated_at: '2026-03-26T09:52:27'
+generated_at: '2026-04-30T16:22:49'
 cards:
 - cd_id: k02a7d3097d94489381bbed7
   cd_type: CHART
@@ -26,9 +26,6 @@ cards:
   - 周转率_店存消化率
   row_count: 10
   key: skcTop10
-  validate:
-    min_rows: 1
-    required_cols: [skc编码, 波段]
 - cd_id: peaee175ceeb24483995edf1
   cd_type: CHART
   name: 城市
@@ -54,48 +51,8 @@ cards:
   - 奥莱_客单价
   - 奥莱_入机折扣
   - 奥莱_实销折扣
-  row_count: 41
+  row_count: 46
   key: dailySalesOverview
-  validate:
-    min_rows: 2
-    required_cols: [渠道, 城市, 正价_业绩, 正价_店数]
-    summary_row:            # 汇总行有效性：检查特定行是否存在且关键列非零
-      filter_col: 渠道
-      filter_val: 总计
-      nonzero_col: 正价_业绩
-    vision:                 # Vision截图核对：从该卡片采样N行与截图比对
-      sample_by: 城市
-      exclude_vals: {渠道: 总计, 城市: 总计}
-      verify_cols: [正价_业绩, 正价_店数]
-- cd_id: n539522feb848463d949392e
-  cd_type: DRILL
-  name: 波段类别_动销率-店铺
-  collect: true
-  skip: false
-  collect_strategy: single
-  columns:
-  - 店铺
-  - 运营中类
-  - 26A_2Y_skc数_销售
-  - 26A_2Y_skc数_投放
-  - 26A_2Y_动销率_店铺
-  - 26A_3A_skc数_销售
-  - 26A_3A_skc数_投放
-  - 26A_3A_动销率_店铺
-  - 26A_3B_skc数_销售
-  - 26A_3B_skc数_投放
-  - 26A_3B_动销率_店铺
-  - 26A_4A_skc数_销售
-  - 26A_4A_skc数_投放
-  - 26A_4A_动销率_店铺
-  - 26B_3X_skc数_销售
-  - 26B_3X_skc数_投放
-  - 26B_3X_动销率_店铺
-  - 26B_3Y_skc数_销售
-  - 26B_3Y_skc数_投放
-  - 26B_3Y_动销率_店铺
-  row_count: 918
-  key: drillSellThroughStoreCategoryRegular
 - cd_id: c1c8c6067cae54b50a26e51f
   cd_type: CHART
   name: 正价店
@@ -110,7 +67,7 @@ cards:
   - 客单价
   - 入机折扣
   - 实销折扣
-  row_count: 71
+  row_count: 75
   key: storeDetailRegular
 - cd_id: ed3661a8128c6449bac31d3e
   cd_type: CHART
@@ -126,98 +83,8 @@ cards:
   - 客单价
   - 入机折扣
   - 实销折扣
-  row_count: 21
+  row_count: 23
   key: storeDetailOutlet
-- cd_id: f88647253435141e8a88cac8
-  cd_type: CHART
-  name: 波段_动销率-城市
-  collect: true
-  skip: false
-  collect_strategy: split_by_filter
-  columns:
-  - 城市
-  - 正价_26A_4A_skc数_销售
-  - 正价_26A_4A_skc数_投放
-  - 正价_26A_4A_动销率_城市
-  - 正价_26A_4A_动销率_店铺
-  - 正价_26B_3X_skc数_销售
-  - 正价_26B_3X_skc数_投放
-  - 正价_26B_3X_动销率_城市
-  - 正价_26B_3X_动销率_店铺
-  - 正价_26A_3B_skc数_销售
-  - 正价_26A_3B_skc数_投放
-  - 正价_26A_3B_动销率_城市
-  - 正价_26A_3B_动销率_店铺
-  - 正价_26A_3A_skc数_销售
-  - 正价_26A_3A_skc数_投放
-  - 正价_26A_3A_动销率_城市
-  - 正价_26A_3A_动销率_店铺
-  - 正价_26A_2Y_skc数_销售
-  - 正价_26A_2Y_skc数_投放
-  - 正价_26A_2Y_动销率_城市
-  - 正价_26A_2Y_动销率_店铺
-  - 正价_26B_3Y_skc数_销售
-  - 正价_26B_3Y_skc数_投放
-  - 正价_26B_3Y_动销率_城市
-  - 正价_26B_3Y_动销率_店铺
-  - 奥莱_26A_4A_skc数_销售
-  - 奥莱_26A_4A_skc数_投放
-  - 奥莱_26A_4A_动销率_城市
-  - 奥莱_26A_4A_动销率_店铺
-  - 奥莱_26B_3Y_skc数_销售
-  - 奥莱_26B_3Y_skc数_投放
-  - 奥莱_26B_3Y_动销率_城市
-  - 奥莱_26B_3Y_动销率_店铺
-  - 奥莱_26B_3X_skc数_销售
-  - 奥莱_26B_3X_skc数_投放
-  - 奥莱_26B_3X_动销率_城市
-  - 奥莱_26B_3X_动销率_店铺
-  - 奥莱_26A_3B_skc数_销售
-  - 奥莱_26A_3B_skc数_投放
-  - 奥莱_26A_3B_动销率_城市
-  - 奥莱_26A_3B_动销率_店铺
-  - 奥莱_26A_3A_skc数_销售
-  - 奥莱_26A_3A_skc数_投放
-  - 奥莱_26A_3A_动销率_城市
-  - 奥莱_26A_3A_动销率_店铺
-  - 奥莱_26A_2Y_skc数_销售
-  - 奥莱_26A_2Y_skc数_投放
-  - 奥莱_26A_2Y_动销率_城市
-  - 奥莱_26A_2Y_动销率_店铺
-  row_count: 45
-  key: skcSellThroughCity
-  validate:
-    min_rows: 2
-    required_cols: [城市]
-- cd_id: x86a1b5bdd03a418f82a6053
-  cd_type: DRILL
-  name: 波段类别_动销率-店铺
-  collect: true
-  skip: false
-  collect_strategy: single
-  columns:
-  - 店铺
-  - 运营中类
-  - 26A_2Y_skc数_销售
-  - 26A_2Y_skc数_投放
-  - 26A_2Y_动销率_店铺
-  - 26A_3A_skc数_销售
-  - 26A_3A_skc数_投放
-  - 26A_3A_动销率_店铺
-  - 26A_3B_skc数_销售
-  - 26A_3B_skc数_投放
-  - 26A_3B_动销率_店铺
-  - 26A_4A_skc数_销售
-  - 26A_4A_skc数_投放
-  - 26A_4A_动销率_店铺
-  - 26B_3X_skc数_销售
-  - 26B_3X_skc数_投放
-  - 26B_3X_动销率_店铺
-  - 26B_3Y_skc数_销售
-  - 26B_3Y_skc数_投放
-  - 26B_3Y_动销率_店铺
-  row_count: 173
-  key: drillSellThroughStoreCategoryOutlet
 - cd_id: va60ffe8f39e94e2db7d1917
   cd_type: CHART
   name: 策略结构
@@ -228,26 +95,19 @@ cards:
   - 渠道
   - 城市
   - 正价_扣券占比_当年正价
-  - 正价_扣券占比_当年减价
   - 正价_扣券占比_当年活动
   - 正价_扣券占比_住年旧货
   - 正价_实销折损_当年正价
-  - 正价_实销折损_当年减价
   - 正价_实销折损_当年活动
   - 正价_实销折损_住年旧货
   - 奥莱_扣券占比_当年正价
-  - 奥莱_扣券占比_当年减价
   - 奥莱_扣券占比_当年活动
   - 奥莱_扣券占比_住年旧货
   - 奥莱_实销折损_当年正价
-  - 奥莱_实销折损_当年减价
   - 奥莱_实销折损_当年活动
   - 奥莱_实销折损_住年旧货
-  row_count: 39
+  row_count: 44
   key: salesTrend
-  validate:
-    min_rows: 2
-    required_cols: [渠道, 城市]
 - cd_id: l629aae53e1a048439098814
   cd_type: CHART
   name: 正价_店铺明细
@@ -257,164 +117,13 @@ cards:
   columns:
   - 店铺
   - 占比_当年正价
-  - 占比_当年减价
   - 占比_当年活动
   - 占比_住年旧货
   - 实销折损_当年正价
-  - 实销折损_当年减价
   - 实销折损_当年活动
   - 实销折损_住年旧货
-  row_count: 71
+  row_count: 75
   key: storeTrendRegular
-- cd_id: v44fb983c2df94ee0a6269e9
-  cd_type: CHART
-  name: 奥莱店
-  collect: true
-  skip: false
-  collect_strategy: single
-  columns:
-  - 店铺
-  - 26A_2Y_skc数_销售
-  - 26A_2Y_skc数_投放
-  - 26A_2Y_动销率_店铺
-  - 26A_3A_skc数_销售
-  - 26A_3A_skc数_投放
-  - 26A_3A_动销率_店铺
-  - 26A_3B_skc数_销售
-  - 26A_3B_skc数_投放
-  - 26A_3B_动销率_店铺
-  - 26A_4A_skc数_销售
-  - 26A_4A_skc数_投放
-  - 26A_4A_动销率_店铺
-  - 26B_3X_skc数_销售
-  - 26B_3X_skc数_投放
-  - 26B_3X_动销率_店铺
-  - 26B_3Y_skc数_销售
-  - 26B_3Y_skc数_投放
-  - 26B_3Y_动销率_店铺
-  row_count: 21
-  key: skcSellThroughStoreOutlet
-- cd_id: v0cfbd5c1128440d7a057eb5
-  cd_type: CHART
-  name: 正价店
-  collect: true
-  skip: false
-  collect_strategy: single
-  columns:
-  - 店铺
-  - 26A_2Y_skc数_销售
-  - 26A_2Y_skc数_投放
-  - 26A_2Y_动销率_店铺
-  - 26A_3A_skc数_销售
-  - 26A_3A_skc数_投放
-  - 26A_3A_动销率_店铺
-  - 26A_3B_skc数_销售
-  - 26A_3B_skc数_投放
-  - 26A_3B_动销率_店铺
-  - 26A_4A_skc数_销售
-  - 26A_4A_skc数_投放
-  - 26A_4A_动销率_店铺
-  - 26B_3X_skc数_销售
-  - 26B_3X_skc数_投放
-  - 26B_3X_动销率_店铺
-  - 26B_3Y_skc数_销售
-  - 26B_3Y_skc数_投放
-  - 26B_3Y_动销率_店铺
-  row_count: 86
-  key: skcSellThroughStoreRegular
-- cd_id: n078e9c5ad540455889f3216
-  cd_type: CHART
-  name: 奥莱店
-  collect: true
-  skip: false
-  collect_strategy: split_by_filter
-  columns:
-  - 新/旧货
-  - 运营中类
-  - 销售扣券%
-  - 销售吊牌%
-  - 总进吊牌%
-  row_count: 42
-  key: categoryStructureOutlet
-  validate:
-    min_rows: 2
-    required_cols: [新/旧货, 运营中类, 销售吊牌%, 总进吊牌%]
-- cd_id: cc9cdfd9a603d427c9292b80
-  cd_type: CHART
-  name: 正价店
-  collect: true
-  skip: false
-  collect_strategy: split_by_filter
-  columns:
-  - 新/旧货
-  - 运营中类
-  - 销售扣券%
-  - 销售吊牌%
-  - 总进吊牌%
-  row_count: 42
-  key: categoryStructureRegular
-  validate:
-    min_rows: 2
-    required_cols: [新/旧货, 运营中类, 销售吊牌%, 总进吊牌%]
-- cd_id: d7ea0ea258c27486c8e5276f
-  cd_type: DRILL
-  name: 品类_波段_动销率-城市
-  collect: true
-  skip: false
-  collect_strategy: split_by_filter
-  columns:
-  - 城市
-  - 运营中类
-  - 正价_26A_4A_skc数_销售
-  - 正价_26A_4A_skc数_投放
-  - 正价_26A_4A_动销率_城市
-  - 正价_26A_4A_动销率_店铺
-  - 正价_26A_3B_skc数_销售
-  - 正价_26A_3B_skc数_投放
-  - 正价_26A_3B_动销率_城市
-  - 正价_26A_3B_动销率_店铺
-  - 正价_26A_3A_skc数_销售
-  - 正价_26A_3A_skc数_投放
-  - 正价_26A_3A_动销率_城市
-  - 正价_26A_3A_动销率_店铺
-  - 正价_26B_3X_skc数_销售
-  - 正价_26B_3X_skc数_投放
-  - 正价_26B_3X_动销率_城市
-  - 正价_26B_3X_动销率_店铺
-  - 正价_26A_2Y_skc数_销售
-  - 正价_26A_2Y_skc数_投放
-  - 正价_26A_2Y_动销率_城市
-  - 正价_26A_2Y_动销率_店铺
-  - 正价_26B_3Y_skc数_销售
-  - 正价_26B_3Y_skc数_投放
-  - 正价_26B_3Y_动销率_城市
-  - 正价_26B_3Y_动销率_店铺
-  - 奥莱_26A_4A_skc数_销售
-  - 奥莱_26A_4A_skc数_投放
-  - 奥莱_26A_4A_动销率_城市
-  - 奥莱_26A_4A_动销率_店铺
-  - 奥莱_26B_3Y_skc数_销售
-  - 奥莱_26B_3Y_skc数_投放
-  - 奥莱_26B_3Y_动销率_城市
-  - 奥莱_26B_3Y_动销率_店铺
-  - 奥莱_26B_3X_skc数_销售
-  - 奥莱_26B_3X_skc数_投放
-  - 奥莱_26B_3X_动销率_城市
-  - 奥莱_26B_3X_动销率_店铺
-  - 奥莱_26A_3B_skc数_销售
-  - 奥莱_26A_3B_skc数_投放
-  - 奥莱_26A_3B_动销率_城市
-  - 奥莱_26A_3B_动销率_店铺
-  - 奥莱_26A_3A_skc数_销售
-  - 奥莱_26A_3A_skc数_投放
-  - 奥莱_26A_3A_动销率_城市
-  - 奥莱_26A_3A_动销率_店铺
-  - 奥莱_26A_2Y_skc数_销售
-  - 奥莱_26A_2Y_skc数_投放
-  - 奥莱_26A_2Y_动销率_城市
-  - 奥莱_26A_2Y_动销率_店铺
-  row_count: 395
-  key: drillCategoryBandSellThroughCity
 - cd_id: bec6fabc41c3741278056110
   cd_type: DRILL
   name: 2025-11-11 11:47:09-drill-正价排名
@@ -425,7 +134,7 @@ cards:
   - 店铺
   - 件数
   - 店存
-  row_count: 95
+  row_count: 99
   key: drillSkcRankingStore
 - cd_id: tfcce89fce25d49cbafd59be
   cd_type: CHART
@@ -436,12 +145,108 @@ cards:
   columns:
   - 店铺
   - 占比_当年正价
-  - 占比_当年减价
   - 占比_当年活动
   - 占比_住年旧货
   - 实销折损_当年正价
-  - 实销折损_当年减价
   - 实销折损_当年活动
   - 实销折损_住年旧货
-  row_count: 21
+  row_count: 23
   key: storeTrendOutlet
+- cd_id: ab3ced129fcda47058666dab
+  cd_type: CHART
+  name: 正价_销售占比
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 新/旧货分类
+  - 销售占比%
+  row_count: 3
+  key: ab3ced129fcda47058666dab
+- cd_id: j4045eba2dd2e4db69f06b26
+  cd_type: CHART
+  name: 奥莱店_销售占比
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 新/旧货
+  - 销售扣券%
+  row_count: 3
+  key: j4045eba2dd2e4db69f06b26
+- cd_id: kc8e56cd6f4e54d49b5e5736
+  cd_type: CHART
+  name: 正价店_类别
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 维度_类别
+  - 销售%
+  - 吊牌%
+  - 总进%
+  row_count: 9
+  key: kc8e56cd6f4e54d49b5e5736
+- cd_id: me44720f2e8974152bb011d5
+  cd_type: CHART
+  name: 正价店_波段
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 年份类型
+  - 维度_波段
+  - 销售%
+  - 吊牌%
+  - 总进%
+  row_count: 12
+  key: me44720f2e8974152bb011d5
+- cd_id: ma8e0221acd4f44c29a0d0e9
+  cd_type: CHART
+  name: 奥莱店_类别
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 维度_类别
+  - 销售%
+  - 吊牌%
+  - 总进%
+  row_count: 9
+  key: ma8e0221acd4f44c29a0d0e9
+- cd_id: w528fc2f5c1ce429d92fb1ca
+  cd_type: CHART
+  name: 奥莱店_波段
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 年份类型
+  - 维度_波段
+  - 销售%
+  - 吊牌%
+  - 总进%
+  row_count: 12
+  key: w528fc2f5c1ce429d92fb1ca
+- cd_id: a080df2142d7745fb906fbe9
+  cd_type: CHART
+  name: 奥莱店_货期
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 维度_货期
+  - 销售扣券%
+  row_count: 5
+  key: a080df2142d7745fb906fbe9
+- cd_id: g7ef11975fa074e5cb6d68e4
+  cd_type: CHART
+  name: 正价店_货期
+  collect: true
+  skip: false
+  collect_strategy: split_by_filter
+  columns:
+  - 维度_货期
+  - 销售扣券%
+  row_count: 5
+  key: g7ef11975fa074e5cb6d68e4

@@ -48,8 +48,9 @@ async def playwright_login() -> str:
         ctx  = await browser.new_context()
         page = await ctx.new_page()
         await page.goto(f"{BASE_URL}/auth/login", wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_selector('img[alt="切换登录方式"]', timeout=10000)
-        await page.click('img[alt="切换登录方式"]')
+        switch_sel = 'img[alt="切换登录方式"], img[alt="Switch login method"]'
+        await page.wait_for_selector(switch_sel, timeout=10000)
+        await page.click(switch_sel)
         await page.wait_for_function(
             "() => document.querySelector('.loginSection')?.style.display !== 'none'",
             timeout=5000,

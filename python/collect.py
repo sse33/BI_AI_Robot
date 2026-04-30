@@ -17,6 +17,7 @@ import argparse
 import asyncio
 import json
 import os
+import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -48,8 +49,9 @@ async def playwright_login() -> str:
         ctx  = await browser.new_context()
         page = await ctx.new_page()
         await page.goto(f"{BASE_URL}/auth/login", wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_selector('img[alt="切换登录方式"]', timeout=10000)
-        await page.click('img[alt="切换登录方式"]')
+        switch_sel = 'img[alt="切换登录方式"], img[alt="Switch login method"]'
+        await page.wait_for_selector(switch_sel, timeout=10000)
+        await page.click(switch_sel)
         await page.wait_for_function(
             "() => document.querySelector('.loginSection')?.style.display !== 'none'",
             timeout=5000,
@@ -171,9 +173,9 @@ def _fetch_dashboard_title(pg_id: str, session) -> str:
         return ""
 
 
-def collect_dashboard(cfg: dict, cookie_str: str) -> dict:
+def collect_dashboard(cfg: dict, cookie_str: str, _rediscovered: bool = False) -> dict:
     import requests as _req
-    from bi_card_fetcher import GuanyuanClient
+    from bi_card_fetcher import GuanyuanClient, CardUnavailableError
 
     dashboard_id = cfg["id"]
     print(f"\n[collect] 仪表板: {cfg['name']}")
@@ -199,9 +201,10 @@ def collect_dashboard(cfg: dict, cookie_str: str) -> dict:
 
     client  = GuanyuanClient(cookies=cookie_str)
     results = {}
+    unavailable_count = 0
 
     def _fetch(card: dict) -> tuple[str, dict]:
-        key   = card["key"]       # 当前为 cd_id，日后替换为语义名
+        key   = card["key"]
         cd_id = card["cd_id"]
         if cd_id in split_map:
             data = fetch_split(cd_id, split_map[cd_id], client)
@@ -218,9 +221,28 @@ def collect_dashboard(cfg: dict, cookie_str: str) -> dict:
                 results[key] = data
                 print(f"  ✓ {card['name']:30} {len(data['rows']):4} 行  "
                       f"({'split' if card['cd_id'] in split_map else 'single'})")
+            except CardUnavailableError:
+                unavailable_count += 1
+                print(f"  ✗ {card['name']:30} 卡片不可用（仪表板结构可能已变更）")
+                results[card["key"]] = {"columns": [], "rows": []}
             except Exception as e:
                 print(f"  ✗ {card['name']:30} 失败: {e}")
                 results[card["key"]] = {"columns": [], "rows": []}
+
+    # 检测到结构变更：自动重跑 discover 并完整重采集（仅触发一次）
+    if unavailable_count > 0 and not _rediscovered:
+        print(f"\n[rediscover] 检测到 {unavailable_count} 张卡片不可用，"
+              f"自动重跑 discover.py 刷新配置...")
+        discover_script = Path(__file__).parent / "discover.py"
+        result = subprocess.run(
+            [sys.executable, str(discover_script), "--dashboard", dashboard_id],
+            cwd=Path(__file__).parent,
+        )
+        if result.returncode == 0:
+            print("[rediscover] discover 完成，重新采集所有卡片...\n")
+            return collect_dashboard(cfg, cookie_str, _rediscovered=True)
+        else:
+            print("[rediscover] discover 失败，继续使用当前采集结果")
 
     manifest = {
         "fetchedAt":      datetime.now().isoformat(),

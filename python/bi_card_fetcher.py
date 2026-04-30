@@ -13,6 +13,11 @@ import requests
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+
+class CardUnavailableError(Exception):
+    """卡片不可用：BI 返回空响应，通常表示仪表板结构已变更（卡片被修改或删除）"""
+    pass
+
 # ── 从 reports_meta.yaml 加载卡片配置 ────────────────────────────────────────
 
 def _load_meta() -> dict:
@@ -153,7 +158,11 @@ class GuanyuanClient:
         resp = self.session.post(url, json=body, timeout=30)
         resp.raise_for_status()
 
-        cm   = resp.json()["chartMain"]
+        data = resp.json()
+        if "chartMain" not in data:
+            raise CardUnavailableError(card_id)
+
+        cm   = data["chartMain"]
         cols = extract_column_names(cm)
         rows = parse_rows(cm)
 

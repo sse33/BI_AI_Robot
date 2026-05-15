@@ -101,17 +101,12 @@ def list_cards(dashboard_id: Optional[str] = None) -> dict:
     Returns:
         {
           "dashboard_name": "...",
-          "available_filters": [
-            {"name": "字段名", "description": "字段语义与示例值"},
-            ...
-          ],
+          "available_filters": [...],
           "cards": [
             {"card_id": "...", "card_name": "...", "card_type": "...", "business_description": "..."},
             ...
           ]
         }
-        注意：available_filters 中每项含 name 和 description，
-        根据 description 判断用户查询词对应的筛选字段，再将 name 传给 get_card_data。
     """
     t0 = _log_call("list_cards", dashboard_id=dashboard_id)
     try:
@@ -144,8 +139,8 @@ def get_cards_by_filter(filter_name: str, dashboard_id: Optional[str] = None) ->
 
     Args:
         dashboard_id: 仪表板 ID，从 list_dashboards 结果中获取
-        filter_name: 筛选器字段名，取自 list_cards 返回的 available_filters[*].name，
-                     例：'skc编码'、'实际波段'、'商品标签'
+        filter_name: 筛选器字段名，必须来自 list_cards 返回的 available_filters，
+                     例：'skc编码'、'实际波段'、'运营中类'
 
     Returns:
         {
@@ -193,8 +188,8 @@ def get_card_data(
         dashboard_id: 仪表板 ID，从 list_dashboards 结果中获取
         card_id: 卡片 ID，从 list_cards 结果中获取
         filters: 可选筛选条件，字段名 → 值（单值精确匹配）
-                 字段名取自 list_cards 返回的 available_filters[*].name
-                 例：{"实际波段": "SS26", "商品标签": "汉麻牛仔"}
+                 字段名必须来自 list_cards 返回的 available_filters
+                 例：{"实际波段": "SS26", "运营中类": "牛仔裤"}
                  不传则使用仪表板默认条件（返回全量数据）
         limit: 最多返回行数，默认 200，最大 1000
 

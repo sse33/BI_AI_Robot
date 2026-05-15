@@ -9,16 +9,25 @@ MCP Server 主入口。
     python server.py --port 9000          # 覆盖端口
     python server.py --host 127.0.0.1     # 仅本机访问
     python server.py --transport stdio    # stdio 模式（本地调试用）
+
+认证：
+    设置环境变量 MCP_API_KEY，所有 SSE 请求须携带请求头：
+        Authorization: Bearer <MCP_API_KEY>
+    未设置 MCP_API_KEY 则不启用认证（仅限内网/本地使用）。
 """
 
 import argparse
 import os
-import sys
 from pathlib import Path
 from typing import Optional
 
+import uvicorn
 from dotenv import load_dotenv
 from fastmcp import FastMCP
+from starlette.middleware import Middleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 import tools
 
 # 加载根目录 .env（与 python/ 版本共用同一个 .env 文件）
@@ -34,6 +43,20 @@ mcp = FastMCP(
         "数据由 BI 系统实时返回，已经是聚合后的结果，无需二次计算。"
     ),
 )
+
+
+class ApiKeyMiddleware(BaseHTTPMiddleware):
+    """检查 Authorization: Bearer <key> 请求头。"""
+
+    def __init__(self, app, api_key: str):
+        super().__init__(app)
+        self.api_key = api_key
+
+    async def dispatch(self, request: Request, call_next):
+        auth = request.headers.get("Authorization", "")
+        if auth != f"Bearer {self.api_key}":
+            return Response("Unauthorized", status_code=401)
+        return await call_next(request)
 
 
 @mcp.tool(description=tools.get_cards_by_filter.__doc__)
@@ -79,5 +102,12 @@ if __name__ == "__main__":
     if args.transport == "stdio":
         mcp.run(transport="stdio")
     else:
+        api_key = os.getenv("MCP_API_KEY", "")
+        middleware = [Middleware(ApiKeyMiddleware, api_key=api_key)] if api_key else []
+        if api_key:
+            print("认证已启用（MCP_API_KEY）")
+        else:
+            print("警告：MCP_API_KEY 未设置，服务无认证保护")
         print(f"MCP Server 启动: http://{args.host}:{args.port}/sse")
-        mcp.run(transport="sse", host=args.host, port=args.port)
+        app = mcp.http_app(transport="sse", middleware=middleware)
+        uvicorn.run(app, host=args.host, port=args.port)

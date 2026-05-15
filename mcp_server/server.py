@@ -103,9 +103,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--transport",
-        choices=["sse", "stdio"],
-        default=os.getenv("MCP_TRANSPORT", "sse"),
-        help="传输模式：sse（飞书 Agent）或 stdio（本地调试）",
+        choices=["streamable-http", "sse", "stdio"],
+        default=os.getenv("MCP_TRANSPORT", "streamable-http"),
+        help="传输模式：streamable-http（飞书 Agent，默认）/ sse（旧版）/ stdio（本地调试）",
     )
     args = parser.parse_args()
 
@@ -118,6 +118,10 @@ if __name__ == "__main__":
             print("认证已启用（MCP_API_KEY）")
         else:
             print("警告：MCP_API_KEY 未设置，服务无认证保护")
-        print(f"MCP Server 启动: http://{args.host}:{args.port}/sse")
-        app = mcp.http_app(transport="sse", middleware=middleware)
+        # streamable-http：无状态，每次调用独立 POST，适合飞书 Agent
+        # sse：有状态长连接，会话断开后工具调用失败
+        transport = args.transport
+        endpoint = "/mcp" if transport == "streamable-http" else "/sse"
+        print(f"MCP Server 启动: http://{args.host}:{args.port}{endpoint} (transport={transport})")
+        app = mcp.http_app(transport=transport, middleware=middleware)
         uvicorn.run(app, host=args.host, port=args.port)

@@ -25,8 +25,6 @@ import uvicorn
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 from starlette.middleware import Middleware
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
 from starlette.responses import Response
 import tools
 
@@ -45,18 +43,24 @@ mcp = FastMCP(
 )
 
 
-class ApiKeyMiddleware(BaseHTTPMiddleware):
-    """检查 Authorization: Bearer <key> 请求头。"""
+class ApiKeyMiddleware:
+    """纯 ASGI middleware，检查 Authorization: Bearer <key> 请求头。
+    不使用 BaseHTTPMiddleware，避免其缓冲行为破坏 SSE 流式响应。
+    """
 
     def __init__(self, app, api_key: str):
-        super().__init__(app)
+        self.app = app
         self.api_key = api_key
 
-    async def dispatch(self, request: Request, call_next):
-        auth = request.headers.get("Authorization", "")
-        if auth != f"Bearer {self.api_key}":
-            return Response("Unauthorized", status_code=401)
-        return await call_next(request)
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            headers = {k.lower(): v for k, v in scope.get("headers", [])}
+            auth = headers.get(b"authorization", b"").decode()
+            if auth != f"Bearer {self.api_key}":
+                response = Response("Unauthorized", status_code=401)
+                await response(scope, receive, send)
+                return
+        await self.app(scope, receive, send)
 
 
 @mcp.tool(description=tools.list_dashboards.__doc__)

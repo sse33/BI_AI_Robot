@@ -9,10 +9,19 @@ MCP 工具定义。
   4. get_card_data(dashboard_id, card_id, ...)  → 取数据
 """
 
+import logging
+import time
 from typing import Optional
 
 from config import DASHBOARDS
 from bi_client import get_card_data as _get_card_data
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("mcp.tools")
 
 
 def _get_dashboard(dashboard_id: str) -> dict:
@@ -22,6 +31,23 @@ def _get_dashboard(dashboard_id: str) -> dict:
         available = list(DASHBOARDS.keys())
         raise ValueError(f"dashboard_id '{dashboard_id}' 不存在，可用：{available}")
     return d
+
+
+def _log_call(fn_name: str, **kwargs) -> float:
+    """记录工具调用入口，返回开始时间戳。"""
+    params = ", ".join(f"{k}={v!r}" for k, v in kwargs.items() if v is not None)
+    logger.info("[CALL] %s(%s)", fn_name, params)
+    return time.time()
+
+
+def _log_ok(fn_name: str, t0: float, detail: str = "") -> None:
+    elapsed = int((time.time() - t0) * 1000)
+    logger.info("[OK]   %s %s(%dms)", fn_name, detail, elapsed)
+
+
+def _log_err(fn_name: str, t0: float, exc: Exception) -> None:
+    elapsed = int((time.time() - t0) * 1000)
+    logger.error("[ERR]  %s %s(%dms)", fn_name, exc, elapsed)
 
 
 def list_dashboards() -> dict:
@@ -38,7 +64,8 @@ def list_dashboards() -> dict:
           ]
         }
     """
-    return {
+    t0 = _log_call("list_dashboards")
+    result = {
         "dashboard_count": len(DASHBOARDS),
         "dashboards": [
             {
@@ -49,6 +76,8 @@ def list_dashboards() -> dict:
             for d in DASHBOARDS.values()
         ],
     }
+    _log_ok("list_dashboards", t0, f"{result['dashboard_count']} dashboards")
+    return result
 
 
 def list_cards(dashboard_id: str) -> dict:
@@ -69,8 +98,13 @@ def list_cards(dashboard_id: str) -> dict:
           ]
         }
     """
-    d = _get_dashboard(dashboard_id)
-    return {
+    t0 = _log_call("list_cards", dashboard_id=dashboard_id)
+    try:
+        d = _get_dashboard(dashboard_id)
+    except ValueError as e:
+        _log_err("list_cards", t0, e)
+        raise
+    result = {
         "dashboard_name": d["name"],
         "available_filters": d["available_filters"],
         "cards": [
@@ -83,6 +117,8 @@ def list_cards(dashboard_id: str) -> dict:
             for c in d["cards"]
         ],
     }
+    _log_ok("list_cards", t0, f"{len(result['cards'])} cards")
+    return result
 
 
 def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
@@ -103,7 +139,12 @@ def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
           "cards": [...]
         }
     """
-    d = _get_dashboard(dashboard_id)
+    t0 = _log_call("get_cards_by_filter", dashboard_id=dashboard_id, filter_name=filter_name)
+    try:
+        d = _get_dashboard(dashboard_id)
+    except ValueError as e:
+        _log_err("get_cards_by_filter", t0, e)
+        raise
     matched = [
         {
             "card_id": c["card_id"],
@@ -115,11 +156,13 @@ def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
         for c in d["cards"]
         if filter_name in c.get("filter_listeners", [])
     ]
-    return {
+    result = {
         "filter_name": filter_name,
         "matched_card_count": len(matched),
         "cards": matched,
     }
+    _log_ok("get_cards_by_filter", t0, f"{result['matched_card_count']} matched")
+    return result
 
 
 def get_card_data(
@@ -150,13 +193,18 @@ def get_card_data(
           "data": [{字段: 值, ...}, ...]
         }
     """
-    d = _get_dashboard(dashboard_id)
-    card_name = next(
-        (c["card_name"] for c in d["cards"] if c["card_id"] == card_id),
-        card_id,
-    )
-    rows = _get_card_data(card_id, filters=filters, limit=limit)
-    return {
+    t0 = _log_call("get_card_data", dashboard_id=dashboard_id, card_id=card_id, filters=filters)
+    try:
+        d = _get_dashboard(dashboard_id)
+        card_name = next(
+            (c["card_name"] for c in d["cards"] if c["card_id"] == card_id),
+            card_id,
+        )
+        rows = _get_card_data(card_id, filters=filters, limit=limit)
+    except Exception as e:
+        _log_err("get_card_data", t0, e)
+        raise
+    result = {
         "dashboard_id": dashboard_id,
         "card_id": card_id,
         "card_name": card_name,
@@ -164,3 +212,5 @@ def get_card_data(
         "columns": list(rows[0].keys()) if rows else [],
         "data": rows,
     }
+    _log_ok("get_card_data", t0, f"card='{card_name}' {result['row_count']} rows")
+    return result

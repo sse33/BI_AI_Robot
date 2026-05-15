@@ -1,8 +1,9 @@
-# 硬编码仪表板配置 — 第一迭代
-# 仪表板：1.2 单品图册(SKC版)
-# page_id: c38a7adbd12bc40eeaa00526
+# 仪表板配置注册表
+# key = page_id（观远 BI 内部 page ID，非 URL 中的 web-app ID）
+# 新增仪表板：按相同结构追加一个 key-value 即可
 
-DASHBOARD = {
+DASHBOARDS = {
+    "c38a7adbd12bc40eeaa00526": {
     "page_id": "c38a7adbd12bc40eeaa00526",
     "name": "1.2 单品图册(SKC版)",
     "description": "SKC 单品图册，展示各 SKC 的销售、库存、消化率等核心指标",
@@ -138,4 +139,14 @@ DASHBOARD = {
         "产品线(新)", "是否上市", "运营系列(新)", "denim fit-name",
         "spu", "商品标签", "商品期", "skc编码", "denim fit-family",
     ],
+    },  # end c38a7adbd12bc40eeaa00526
 }
+
+# 新增仪表板示例（取消注释并填写）：
+# DASHBOARDS["<page_id>"] = {
+#     "page_id": "<page_id>",
+#     "name": "<仪表板名称>",
+#     "description": "<描述>",
+#     "cards": [...],
+#     "available_filters": [...],
+# }

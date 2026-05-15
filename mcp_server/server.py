@@ -59,23 +59,29 @@ class ApiKeyMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
-@mcp.tool(description=tools.get_cards_by_filter.__doc__)
-def get_cards_by_filter(filter_name: str) -> dict:
-    return tools.get_cards_by_filter(filter_name)
+@mcp.tool(description=tools.list_dashboards.__doc__)
+def list_dashboards() -> dict:
+    return tools.list_dashboards()
 
 
 @mcp.tool(description=tools.list_cards.__doc__)
-def list_cards() -> dict:
-    return tools.list_cards()
+def list_cards(dashboard_id: str) -> dict:
+    return tools.list_cards(dashboard_id)
+
+
+@mcp.tool(description=tools.get_cards_by_filter.__doc__)
+def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
+    return tools.get_cards_by_filter(dashboard_id, filter_name)
 
 
 @mcp.tool(description=tools.get_card_data.__doc__)
 def get_card_data(
+    dashboard_id: str,
     card_id: str,
     filters: Optional[dict] = None,
     limit: int = 200,
 ) -> dict:
-    return tools.get_card_data(card_id, filters=filters, limit=limit)
+    return tools.get_card_data(dashboard_id, card_id, filters=filters, limit=limit)
 
 
 if __name__ == "__main__":

@@ -1,27 +1,109 @@
 """
 MCP 工具定义。
 工具均为无状态，每次调用独立执行。
+
+标准调用流程：
+  1. list_dashboards()                          → 获取所有可用仪表板及其 dashboard_id
+  2. list_cards(dashboard_id)                   → 获取该仪表板的卡片列表和可用筛选器
+  3. get_cards_by_filter(dashboard_id, filter)  → （可选）按筛选器缩小卡片范围
+  4. get_card_data(dashboard_id, card_id, ...)  → 取数据
 """
 
 from typing import Optional
 
-from config import DASHBOARD
+from config import DASHBOARDS
 from bi_client import get_card_data as _get_card_data
 
 
-def get_cards_by_filter(filter_name: str) -> list[dict]:
+def _get_dashboard(dashboard_id: str) -> dict:
+    """内部：按 dashboard_id 查找配置，不存在则抛出。"""
+    d = DASHBOARDS.get(dashboard_id)
+    if not d:
+        available = list(DASHBOARDS.keys())
+        raise ValueError(f"dashboard_id '{dashboard_id}' 不存在，可用：{available}")
+    return d
+
+
+def list_dashboards() -> dict:
     """
-    返回监听指定筛选器的所有数据卡片列表。
+    列出所有已接入的仪表板。
+    Agent 应先调用此工具获取 dashboard_id，再调用 list_cards。
+
+    Returns:
+        {
+          "dashboard_count": N,
+          "dashboards": [
+            {"dashboard_id": "...", "name": "...", "description": "..."},
+            ...
+          ]
+        }
+    """
+    return {
+        "dashboard_count": len(DASHBOARDS),
+        "dashboards": [
+            {
+                "dashboard_id": d["page_id"],
+                "name": d["name"],
+                "description": d.get("description", ""),
+            }
+            for d in DASHBOARDS.values()
+        ],
+    }
+
+
+def list_cards(dashboard_id: str) -> dict:
+    """
+    列出指定仪表板的所有数据卡片及其业务描述。
+    Agent 根据 business_description 判断用哪张卡片回答用户问题，再调用 get_card_data。
+
+    Args:
+        dashboard_id: 仪表板 ID，从 list_dashboards 结果中获取
+
+    Returns:
+        {
+          "dashboard_name": "...",
+          "available_filters": [...],
+          "cards": [
+            {"card_id": "...", "card_name": "...", "card_type": "...", "business_description": "..."},
+            ...
+          ]
+        }
+    """
+    d = _get_dashboard(dashboard_id)
+    return {
+        "dashboard_name": d["name"],
+        "available_filters": d["available_filters"],
+        "cards": [
+            {
+                "card_id": c["card_id"],
+                "card_name": c["card_name"],
+                "card_type": c["card_type"],
+                "business_description": c["business_description"],
+            }
+            for c in d["cards"]
+        ],
+    }
+
+
+def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
+    """
+    返回指定仪表板中监听某个筛选器的所有数据卡片。
     Agent 在用特定条件（如 skc编码、实际波段）筛选时，先调用此工具
     确定哪些卡片会响应该筛选条件，再对这些卡片调用 get_card_data。
 
     Args:
+        dashboard_id: 仪表板 ID，从 list_dashboards 结果中获取
         filter_name: 筛选器字段名，必须来自 list_cards 返回的 available_filters，
                      例：'skc编码'、'实际波段'、'运营中类'
 
     Returns:
-        与 list_cards 格式相同的卡片列表，仅包含监听该筛选器的卡片
+        {
+          "filter_name": "...",
+          "matched_card_count": N,
+          "cards": [...]
+        }
     """
+    d = _get_dashboard(dashboard_id)
     matched = [
         {
             "card_id": c["card_id"],
@@ -30,7 +112,7 @@ def get_cards_by_filter(filter_name: str) -> list[dict]:
             "business_description": c["business_description"],
             "filter_listeners": c["filter_listeners"],
         }
-        for c in DASHBOARD["cards"]
+        for c in d["cards"]
         if filter_name in c.get("filter_listeners", [])
     ]
     return {
@@ -40,50 +122,17 @@ def get_cards_by_filter(filter_name: str) -> list[dict]:
     }
 
 
-def list_cards() -> list[dict]:
-    """
-    列出当前仪表板的所有数据卡片及其业务描述。
-    Agent 根据 business_description 判断用哪张卡片回答用户问题，再调用 get_card_data。
-
-    返回示例：
-    [
-      {
-        "card_id": "o6722f8db3ad0414f8a53c6a",
-        "card_name": "上周销额",
-        "card_type": "KPI_CARD",
-        "business_description": "上周及累计销售额汇总..."
-      },
-      ...
-    ]
-
-    附加信息：
-    - dashboard_name: 仪表板名称
-    - available_filters: 可用筛选维度列表（传给 get_card_data 的 filters 参数时使用这些字段名）
-    """
-    return {
-        "dashboard_name": DASHBOARD["name"],
-        "available_filters": DASHBOARD["available_filters"],
-        "cards": [
-            {
-                "card_id": c["card_id"],
-                "card_name": c["card_name"],
-                "card_type": c["card_type"],
-                "business_description": c["business_description"],
-            }
-            for c in DASHBOARD["cards"]
-        ],
-    }
-
-
 def get_card_data(
+    dashboard_id: str,
     card_id: str,
     filters: Optional[dict] = None,
     limit: int = 200,
 ) -> dict:
     """
-    获取指定卡片的当前数据。
+    获取指定仪表板中某张卡片的当前数据。
 
     Args:
+        dashboard_id: 仪表板 ID，从 list_dashboards 结果中获取
         card_id: 卡片 ID，从 list_cards 结果中获取
         filters: 可选筛选条件，字段名 → 值（单值精确匹配）
                  字段名必须来自 list_cards 返回的 available_filters
@@ -93,6 +142,7 @@ def get_card_data(
 
     Returns:
         {
+          "dashboard_id": ...,
           "card_id": ...,
           "card_name": ...,
           "row_count": ...,
@@ -100,20 +150,17 @@ def get_card_data(
           "data": [{字段: 值, ...}, ...]
         }
     """
-    # 从配置中找卡片名称
+    d = _get_dashboard(dashboard_id)
     card_name = next(
-        (c["card_name"] for c in DASHBOARD["cards"] if c["card_id"] == card_id),
+        (c["card_name"] for c in d["cards"] if c["card_id"] == card_id),
         card_id,
     )
-
     rows = _get_card_data(card_id, filters=filters, limit=limit)
-
-    columns = list(rows[0].keys()) if rows else []
-
     return {
+        "dashboard_id": dashboard_id,
         "card_id": card_id,
         "card_name": card_name,
         "row_count": len(rows),
-        "columns": columns,
+        "columns": list(rows[0].keys()) if rows else [],
         "data": rows,
     }

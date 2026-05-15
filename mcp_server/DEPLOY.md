@@ -6,15 +6,18 @@
 
 | 项目 | 值 |
 |---|---|
-| 服务名称 | `bi-assistant` |
-| Namespace | `bi-assistant` |
+| 服务名称 | `bi-mcp-server` |
+| Namespace | `bi-mcp-server` |
+| Secret 名称 | `bi-mcp-server-env` |
 | Git 仓库 | `https://github.com/sse33/BI_AI_Robot.git` |
 | 分支 | `main` |
 | Dockerfile 位置 | `mcp_server/Dockerfile`（build context 同目录） |
 | 容器端口 | `8000` |
 | NodePort | `30866` |
 | 目标服务器 | `shqn8n01`（172.21.10.66） |
-| 服务访问地址 | `http://172.21.10.66:30866/sse` |
+| 内网访问地址 | `http://172.21.10.66:30866/mcp` |
+| 公网访问地址 | `http://61.140.131.180:30866/mcp` |
+| Transport | `streamable-http`（endpoint `/mcp`） |
 
 ---
 
@@ -63,7 +66,7 @@ Secret 名称：`bi-assistant-secret`
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: bi-assistant
+  name: bi-mcp-server
 ```
 
 ### Secret
@@ -72,8 +75,8 @@ metadata:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: bi-assistant-secret
-  namespace: bi-assistant
+  name: bi-mcp-server-env
+  namespace: bi-mcp-server
 type: Opaque
 stringData:
   GY_BASE_URL: "https://bi.xxx.com"
@@ -91,27 +94,27 @@ stringData:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bi-assistant
-  namespace: bi-assistant
+  name: bi-mcp-server
+  namespace: bi-mcp-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bi-assistant
+      app: bi-mcp-server
   template:
     metadata:
       labels:
-        app: bi-assistant
+        app: bi-mcp-server
     spec:
       containers:
-        - name: bi-assistant
+        - name: bi-mcp-server
           image: bi-assistant:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
           envFrom:
             - secretRef:
-                name: bi-assistant-secret
+                name: bi-mcp-server-env
 ```
 
 ### Service（NodePort）
@@ -120,12 +123,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: bi-assistant
-  namespace: bi-assistant
+  name: bi-mcp-server
+  namespace: bi-mcp-server
 spec:
   type: NodePort
   selector:
-    app: bi-assistant
+    app: bi-mcp-server
   ports:
     - port: 8000
       targetPort: 8000
@@ -157,27 +160,25 @@ Claude 会自动读取本文档中的配置信息，完成以下步骤：
 ```bash
 REXEC=~/.claude/scripts/remote_exec.sh
 SERVER=shqn8n01
-SVC=bi-assistant
+SVC=bi-mcp-server
+IMG=bi-assistant   # 镜像名保持 bi-assistant
 
 # Step 1：拉取代码
-$REXEC $SERVER "cd /tmp/k3s-builds/$SVC && git pull origin main"
+$REXEC $SERVER "git -C /tmp/k3s-builds/$IMG stash; git -C /tmp/k3s-builds/$IMG pull --ff-only origin main"
 
-# Step 2：构建镜像（后台，需轮询 /tmp/build-bi-assistant.log）
-GIT_SHA=$($REXEC $SERVER "cd /tmp/k3s-builds/$SVC && git rev-parse --short HEAD")
+# Step 2：构建镜像（后台，需轮询 /tmp/build-$IMG.log）
+GIT_SHA=$($REXEC $SERVER "git -C /tmp/k3s-builds/$IMG rev-parse --short HEAD")
 $REXEC $SERVER "nohup nerdctl build \
-  -t $SVC:$GIT_SHA \
-  -f /tmp/k3s-builds/$SVC/mcp_server/Dockerfile \
-  /tmp/k3s-builds/$SVC/mcp_server \
-  > /tmp/build-$SVC.log 2>&1 & echo started"
+  -t $IMG:$GIT_SHA \
+  -f /tmp/k3s-builds/$IMG/mcp_server/Dockerfile \
+  /tmp/k3s-builds/$IMG/mcp_server \
+  > /tmp/build-$IMG.log 2>&1 & echo started"
 
 # 等构建完成后打 latest tag
-$REXEC $SERVER "nerdctl tag $SVC:$GIT_SHA $SVC:latest"
+$REXEC $SERVER "nerdctl tag $IMG:$GIT_SHA $IMG:latest"
 
-# Step 3：apply manifest（按顺序）
-$REXEC $SERVER "kubectl apply -f /tmp/$SVC-namespace.yaml"
-$REXEC $SERVER "kubectl apply -f /tmp/$SVC-secret.yaml"
-$REXEC $SERVER "kubectl apply -f /tmp/$SVC-deployment.yaml"
-$REXEC $SERVER "kubectl apply -f /tmp/$SVC-service.yaml"
+# Step 3：rolling restart（Secret 已存在时直接滚动重启）
+$REXEC $SERVER "kubectl rollout restart deployment/$SVC -n $SVC"
 
 # Step 4：验证
 $REXEC $SERVER "kubectl rollout status deployment/$SVC -n $SVC --timeout=120s"
@@ -190,15 +191,17 @@ $REXEC $SERVER "kubectl get pods -n $SVC -o wide"
 
 ```bash
 # Pod 状态应为 Running
-~/.claude/scripts/remote_exec.sh shqn8n01 "kubectl get pods -n bi-assistant"
+~/.claude/scripts/remote_exec.sh shqn8n01 "kubectl get pods -n bi-mcp-server"
 
-# 无认证时返回 SSE 响应头（内网调试）
-curl -I http://172.21.10.66:30866/sse
-
-# 有认证时验证（替换为实际 MCP_API_KEY）
-curl -I http://61.140.131.180:30866/sse \
-  -H "Authorization: Bearer <MCP_API_KEY>"
-# 期望：200 OK；无 key 时返回 401 Unauthorized
+# 冒烟测试（替换为实际 MCP_API_KEY）
+# initialize 返回 200 + session ID 即为成功
+curl -si -X POST http://61.140.131.180:30866/mcp \
+  -H "Authorization: Bearer <MCP_API_KEY>" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","method":"initialize","id":1,"params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+# 期望：200 OK，响应头含 mcp-session-id，body 含 serverInfo.name="BI Assistant"
+# 无 key 时返回 401 Unauthorized
 ```
 
 ---
@@ -209,9 +212,13 @@ curl -I http://61.140.131.180:30866/sse \
 
 | 字段 | 值 |
 |---|---|
-| 请求地址 | `http://61.140.131.180:30866/sse` |
-| Endpoint 类型 | SSE |
+| 请求地址 | `http://61.140.131.180:30866/mcp` |
+| Endpoint 类型 | **Streamable HTTP** |
 | 请求头 | `Authorization` = `Bearer <MCP_API_KEY>` |
+
+> 注意：填写保存后，还需在 Agent 编辑界面重新添加该 MCP 工具，才会生效。
+>
+> 参考截图：`mcp_server/docs/feishu_agent_mcp_setting.jpg`
 
 ---
 

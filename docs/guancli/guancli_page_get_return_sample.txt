@@ -1,0 +1,1643 @@
+你是一个BI专家, 当前在查看如下的一个可视化页面(包含一个或多个卡片)
+
+(注: 关于layout, w代表宽度, 并最多12列; 布局各个组件时, 每行最好占满)
+
+下面是页面的具体信息:
+
+页面标题: 1.2 单品图册(SKC版)
+页面ID: c38a7adbd12bc40eeaa00526
+页面类型: PAGE
+父目录ID: t083d97f0cd484a6ca7612a4
+目录路径: 根目录 / 固定报表 / 品牌 / M60 / 商品 / 单品图册 / 1.2 单品图册(SKC版)
+创建时间: 2024-05-09 16:43:16+0800
+更新时间: 2026-01-08 18:33:40+0800
+
+UniformResourceType: DATA_ANALYSIS_PAGE
+
+
+# Card 1: 页面数据集刷新时间：数据集(单品图册(SKC版))-更新时间  
+
+**ID:** c4ed29d27edde40b099d0569
+
+**Type:** TEXT
+
+
+
+
+# Card 2: 上周销额
+
+**ID:** o6722f8db3ad0414f8a53c6a
+
+**Type:** KPI_CARD
+
+
+
+## 字段格式化信息
+
+** ▲销额%**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** ▲线下销额%**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** ▲线上销额%**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 上周销额**
+  - specifier: ,.0f
+  - prefixUnit: 万
+  - divideDataBy: 10000
+
+
+** 上上周销额**
+  - specifier: ,.0f
+  - prefixUnit: 万
+  - divideDataBy: 10000
+
+
+** 累计销额**
+  - specifier: ,.0f
+  - prefixUnit: 万
+  - divideDataBy: 10000
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 实际上市日期
+- 筛选器ID: b71ace76438134860b6a3eed
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际上市日期 -> 实际上市日期
+
+- 筛选器名称: 实际波段
+- 筛选器ID: f5e7070796136427e862185e
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际波段 -> 实际波段
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品年
+- 筛选器ID: h5670c84a423044a79afdd7f
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品年 -> 商品年
+
+- 筛选器名称: 运营大类
+- 筛选器ID: j29ad4960774b44efa01c87d
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营大类 -> 运营大类
+
+- 筛选器名称: 产品线(新)
+- 筛选器ID: q4281b68614654ad298646d2
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 产品线(新) -> 产品线(新)
+
+- 筛选器名称: 是否上市
+- 筛选器ID: t5492de1722214d1c99fdda5
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 是否上市 -> 是否上市
+
+- 筛选器名称: 运营系列(新)
+- 筛选器ID: t54b68c864a2a4ced8f212ad
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营系列(新) -> 运营系列(新)
+
+- 筛选器名称: denim fit-name
+- 筛选器ID: v3a339882becc4b2c98289eb
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-name -> denim fit-name
+
+- 筛选器名称: spu
+- 筛选器ID: v461fb04033eb4c1e9fde5ec
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * spu -> spu
+
+- 筛选器名称: 商品标签
+- 筛选器ID: v4c578c1c76934da9ba22018
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品标签 -> 商品标签
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+- 筛选器名称: skc编码
+- 筛选器ID: w62e04757b5b74b36b92edb7
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * skc编码 -> skc编码
+
+- 筛选器名称: denim fit-family
+- 筛选器ID: wb791376cf0644b388299543
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-family -> denim fit-family
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  aggregate:
+    `▲销额%` is sum(`上周销额`)/sum(`上上周销额`)-1,
+    `▲线下销额%` is sum(`线下上周销额`)/sum(`线下上上周销额`)-1,
+    `▲线上销额%` is sum(`线上上周销额`)/sum(`线上上上周销额`)-1,
+    `上周销额` is sum(`上周销额`),
+    `上上周销额` is sum(`上上周销额`),
+    `累计销额` is sum(`累计销额`)
+}
+```
+
+# Card 3: 上周销量
+
+**ID:** e219996b5356947cd83cd2b3
+
+**Type:** KPI_CARD
+
+
+
+## 字段格式化信息
+
+** ▲销量%**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** ▲线下销量%**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** ▲线上销量%**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 上周销量**
+  - specifier: ,.0f
+
+
+** 上上周销量**
+  - specifier: ,.0f
+
+
+** 累计销量**
+  - specifier: ,.0f
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 实际上市日期
+- 筛选器ID: b71ace76438134860b6a3eed
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际上市日期 -> 实际上市日期
+
+- 筛选器名称: 实际波段
+- 筛选器ID: f5e7070796136427e862185e
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际波段 -> 实际波段
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品年
+- 筛选器ID: h5670c84a423044a79afdd7f
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品年 -> 商品年
+
+- 筛选器名称: 运营大类
+- 筛选器ID: j29ad4960774b44efa01c87d
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营大类 -> 运营大类
+
+- 筛选器名称: 产品线(新)
+- 筛选器ID: q4281b68614654ad298646d2
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 产品线(新) -> 产品线(新)
+
+- 筛选器名称: 是否上市
+- 筛选器ID: t5492de1722214d1c99fdda5
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 是否上市 -> 是否上市
+
+- 筛选器名称: 运营系列(新)
+- 筛选器ID: t54b68c864a2a4ced8f212ad
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营系列(新) -> 运营系列(新)
+
+- 筛选器名称: denim fit-name
+- 筛选器ID: v3a339882becc4b2c98289eb
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-name -> denim fit-name
+
+- 筛选器名称: spu
+- 筛选器ID: v461fb04033eb4c1e9fde5ec
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * spu -> spu
+
+- 筛选器名称: 商品标签
+- 筛选器ID: v4c578c1c76934da9ba22018
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品标签 -> 商品标签
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+- 筛选器名称: skc编码
+- 筛选器ID: w62e04757b5b74b36b92edb7
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * skc编码 -> skc编码
+
+- 筛选器名称: denim fit-family
+- 筛选器ID: wb791376cf0644b388299543
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-family -> denim fit-family
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  aggregate:
+    `▲销量%` is sum(`上周销量`)/sum(`上上周销量`)-1,
+    `▲线下销量%` is sum(`线下上周销量`)/sum(`线下上上周销量`)-1,
+    `▲线上销量%` is sum(`线上上周销量`)/sum(`线上上上周销量`)-1,
+    `上周销量` is sum(`上周销量`),
+    `上上周销量` is sum(`上上周销量`),
+    `累计销量` is sum(`累计销量`)
+}
+```
+
+# Card 4: 上周折扣
+
+**ID:** h421da6b674dd4c9bb56c5f6
+
+**Type:** KPI_CARD
+
+
+
+## 字段格式化信息
+
+** 上周折扣**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 累计折扣**
+  - specifier: .0%
+  - divideDataBy: 1
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 实际上市日期
+- 筛选器ID: b71ace76438134860b6a3eed
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际上市日期 -> 实际上市日期
+
+- 筛选器名称: 实际波段
+- 筛选器ID: f5e7070796136427e862185e
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际波段 -> 实际波段
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品年
+- 筛选器ID: h5670c84a423044a79afdd7f
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品年 -> 商品年
+
+- 筛选器名称: 运营大类
+- 筛选器ID: j29ad4960774b44efa01c87d
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营大类 -> 运营大类
+
+- 筛选器名称: 产品线(新)
+- 筛选器ID: q4281b68614654ad298646d2
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 产品线(新) -> 产品线(新)
+
+- 筛选器名称: 是否上市
+- 筛选器ID: t5492de1722214d1c99fdda5
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 是否上市 -> 是否上市
+
+- 筛选器名称: 运营系列(新)
+- 筛选器ID: t54b68c864a2a4ced8f212ad
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营系列(新) -> 运营系列(新)
+
+- 筛选器名称: denim fit-name
+- 筛选器ID: v3a339882becc4b2c98289eb
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-name -> denim fit-name
+
+- 筛选器名称: spu
+- 筛选器ID: v461fb04033eb4c1e9fde5ec
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * spu -> spu
+
+- 筛选器名称: 商品标签
+- 筛选器ID: v4c578c1c76934da9ba22018
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品标签 -> 商品标签
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+- 筛选器名称: skc编码
+- 筛选器ID: w62e04757b5b74b36b92edb7
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * skc编码 -> skc编码
+
+- 筛选器名称: denim fit-family
+- 筛选器ID: wb791376cf0644b388299543
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-family -> denim fit-family
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  aggregate:
+    `上周折扣` is sum(`上周销额`)/sum(`上周销售吊牌额`),
+    `累计折扣` is sum(`累计销额`)/sum(`累计吊牌额`)
+}
+```
+
+# Card 5: 周转W
+
+**ID:** sa40a6b95cc3640b4808df14
+
+**Type:** KPI_CARD
+
+
+
+## 字段格式化信息
+
+**周转W 周转W-R**
+  - specifier: ,.0f
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 实际上市日期
+- 筛选器ID: b71ace76438134860b6a3eed
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际上市日期 -> 实际上市日期
+
+- 筛选器名称: 实际波段
+- 筛选器ID: f5e7070796136427e862185e
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际波段 -> 实际波段
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品年
+- 筛选器ID: h5670c84a423044a79afdd7f
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品年 -> 商品年
+
+- 筛选器名称: 运营大类
+- 筛选器ID: j29ad4960774b44efa01c87d
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营大类 -> 运营大类
+
+- 筛选器名称: 产品线(新)
+- 筛选器ID: q4281b68614654ad298646d2
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 产品线(新) -> 产品线(新)
+
+- 筛选器名称: 是否上市
+- 筛选器ID: t5492de1722214d1c99fdda5
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 是否上市 -> 是否上市
+
+- 筛选器名称: 运营系列(新)
+- 筛选器ID: t54b68c864a2a4ced8f212ad
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营系列(新) -> 运营系列(新)
+
+- 筛选器名称: denim fit-name
+- 筛选器ID: v3a339882becc4b2c98289eb
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-name -> denim fit-name
+
+- 筛选器名称: spu
+- 筛选器ID: v461fb04033eb4c1e9fde5ec
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * spu -> spu
+
+- 筛选器名称: 商品标签
+- 筛选器ID: v4c578c1c76934da9ba22018
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品标签 -> 商品标签
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+- 筛选器名称: skc编码
+- 筛选器ID: w62e04757b5b74b36b92edb7
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * skc编码 -> skc编码
+
+- 筛选器名称: denim fit-family
+- 筛选器ID: wb791376cf0644b388299543
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-family -> denim fit-family
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  aggregate:
+    `周转W` is sum(`库存金额`)/sum(`上周销售吊牌额`)
+}
+```
+
+# Card 6: 上周消化率
+
+**ID:** qa1b78eea3ded465bb8594ec
+
+**Type:** KPI_CARD
+
+
+
+## 字段格式化信息
+
+** 上周消化率**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+**累计消化率 累计消化率-R**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 实际上市日期
+- 筛选器ID: b71ace76438134860b6a3eed
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际上市日期 -> 实际上市日期
+
+- 筛选器名称: 实际波段
+- 筛选器ID: f5e7070796136427e862185e
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际波段 -> 实际波段
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品年
+- 筛选器ID: h5670c84a423044a79afdd7f
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品年 -> 商品年
+
+- 筛选器名称: 运营大类
+- 筛选器ID: j29ad4960774b44efa01c87d
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营大类 -> 运营大类
+
+- 筛选器名称: 产品线(新)
+- 筛选器ID: q4281b68614654ad298646d2
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 产品线(新) -> 产品线(新)
+
+- 筛选器名称: 是否上市
+- 筛选器ID: t5492de1722214d1c99fdda5
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 是否上市 -> 是否上市
+
+- 筛选器名称: 运营系列(新)
+- 筛选器ID: t54b68c864a2a4ced8f212ad
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营系列(新) -> 运营系列(新)
+
+- 筛选器名称: denim fit-name
+- 筛选器ID: v3a339882becc4b2c98289eb
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-name -> denim fit-name
+
+- 筛选器名称: spu
+- 筛选器ID: v461fb04033eb4c1e9fde5ec
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * spu -> spu
+
+- 筛选器名称: 商品标签
+- 筛选器ID: v4c578c1c76934da9ba22018
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品标签 -> 商品标签
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+- 筛选器名称: skc编码
+- 筛选器ID: w62e04757b5b74b36b92edb7
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * skc编码 -> skc编码
+
+- 筛选器名称: denim fit-family
+- 筛选器ID: wb791376cf0644b388299543
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-family -> denim fit-family
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  aggregate:
+    `上周消化率` is  sum(`上周销售吊牌额`)/sum(`订单金额`) ,
+    `累计消化率` is  sum(`累计吊牌额`)/sum(`订单金额`) 
+}
+```
+
+# Card 7: 2/4/8/16/20周消化率
+
+**ID:** fa6f8e8c5f5b2443cbe36a40
+
+**Type:** KPI_CARD
+
+
+
+## 字段格式化信息
+
+** 上市2周消化率**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 上市4周消化率**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 上市8周消化率**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 上市16周消化率**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 季末周消化率**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 实际上市日期
+- 筛选器ID: b71ace76438134860b6a3eed
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际上市日期 -> 实际上市日期
+
+- 筛选器名称: 实际波段
+- 筛选器ID: f5e7070796136427e862185e
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际波段 -> 实际波段
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品年
+- 筛选器ID: h5670c84a423044a79afdd7f
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品年 -> 商品年
+
+- 筛选器名称: 运营大类
+- 筛选器ID: j29ad4960774b44efa01c87d
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营大类 -> 运营大类
+
+- 筛选器名称: 产品线(新)
+- 筛选器ID: q4281b68614654ad298646d2
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 产品线(新) -> 产品线(新)
+
+- 筛选器名称: 是否上市
+- 筛选器ID: t5492de1722214d1c99fdda5
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 是否上市 -> 是否上市
+
+- 筛选器名称: 运营系列(新)
+- 筛选器ID: t54b68c864a2a4ced8f212ad
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营系列(新) -> 运营系列(新)
+
+- 筛选器名称: denim fit-name
+- 筛选器ID: v3a339882becc4b2c98289eb
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-name -> denim fit-name
+
+- 筛选器名称: spu
+- 筛选器ID: v461fb04033eb4c1e9fde5ec
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * spu -> spu
+
+- 筛选器名称: 商品标签
+- 筛选器ID: v4c578c1c76934da9ba22018
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品标签 -> 商品标签
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+- 筛选器名称: skc编码
+- 筛选器ID: w62e04757b5b74b36b92edb7
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * skc编码 -> skc编码
+
+- 筛选器名称: denim fit-family
+- 筛选器ID: wb791376cf0644b388299543
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-family -> denim fit-family
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  aggregate:
+    `上市2周消化率` is  sum(`上市2周吊牌额`)/sum(`订单金额`) ,
+    `上市4周消化率` is  sum(`上市4周吊牌额`)/sum(`订单金额`) ,
+    `上市8周消化率` is  sum(`上市8周吊牌额`)/sum(`订单金额`) ,
+    `上市16周消化率` is  sum(`上市16周吊牌额`)/sum(`订单金额`) ,
+    `季末周消化率` is  sum(`季末周吊牌额`)/sum(`订单金额`) 
+}
+```
+
+# Card 8: 实际上市日期
+
+**ID:** b71ace76438134860b6a3eed
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 实际上市日期
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 9: 单品图册(SKC版_竖排)
+
+**ID:** beba57f768e164e699daec5d
+
+**Type:** PIVOT_TABLE
+
+
+
+## 字段格式化信息
+
+** 吊牌价**
+  - specifier: ,.0f
+
+
+** 全渠道消化率目标**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 全渠道消化率落差**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  group_by:
+    `序号` is  row_number() over (partition by `参考` order by `上周销额` desc) ,
+    `商品图片url`
+  aggregate:
+    `商品标签` is max(`商品标签`),
+    `skc编码` is max(`skc编码`),
+    `上周销额<br>排名(线下)` is max(`线下上周销额排名`),
+    `上周销额<br>排名(all)` is max(`上周销额排名`),
+    `上周销量<br>排名(all)` is max(`上周销量排名`),
+    `累计销量<br>排名(可变)` is max( 
+row_number() over (partition by `参考` order by `累计销量` desc)),
+    `实际波段` is max(`实际波段`),
+    `运营波段（skc）` is max(`运营波段（skc）`),
+    `实际上市日期` is max(`实际上市日期`),
+    `产品线(新)` is max(`产品线(新)`),
+    `运营系列(新)` is max(`运营系列(新)`),
+    `运营中类` is max(`运营中类`),
+    `denim fit-name` is max(`denim fit-name`),
+    `版型` is max(`版型`),
+    `吊牌价` is max(`吊牌价`),
+    `吊牌价_港元` is max(`吊牌价_港元`),
+    `全渠道消化率目标` is sum(`全渠道消化率目标`),
+    `全渠道消化率落差` is sum(`全渠道消化率落差`),
+    `全渠道畅平销` is max(`全渠道畅平销`),
+    `总订单量<br>自营/托管/电商/港澳/总仓` is max(`总订单量/自营/托管/电商`),
+    `总订量(PO)<br>自营/托管/电商/港澳/共享` is max(`总订量(PO)`),
+    `总库存<br>自营/托管/电商/港澳/总仓` is max(`总库存/自营/托管/电商/总仓`),
+    `门店仓<br>自营/托管/港澳<br>仓存<br>自营/托管/电商/港澳/共享/总仓` is max(`店存/仓存`),
+    `累计销量<br>自营/托管/电商/港澳` is max(`累计销量/自营/托管/电商`),
+    `累计折扣<br>自营/托管/电商/港澳` is max(`累计折扣/自营/托管/电商/港澳`),
+    `累计消化率<br>自营/托管/电商/港澳` is max(`累计消化率/自营/托管/电商`),
+    `线下/线上累计消化率` is max(`线下/线上累计消化率`),
+    `累计销量(N/E/S/W/北区/南区/小程序/电商` is max(`累计销量(E/S/W/N/HZ/小程序/东/南/北/EC)`),
+    `累计消化率(N/E/S/W/北区/南区/小程序/电商)` is max(`累计消化率(E/S/W/N/小程序/东/南/北/EC)`),
+    `上周总销量<br>自营/托管/电商/港澳` is max(`上周总销量/自营/托管/电商`),
+    `上周销量环比<br>自营/托管/电商/港澳` is max(`上周销量环比/自营/托管/电商`),
+    `上周总销额<br>自营/托管/电商/港澳` is max(`上周总销额/自营/托管/电商`),
+    `上周销额环比<br>自营/托管/电商/港澳` is max(`上周销额环比/自营/托管/电商`),
+    `上周折扣<br>自营/托管/电商/港澳` is max(`上周折扣/自营/托管/电商`),
+    `周转<br>自营/托管/电商/港澳<br>N/E/S/W<br>北区/南区` is max(`各渠道周转`),
+    `电商平台上周销量<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台上周销量(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`),
+    `电商平台上周销量环比<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台上周销量环比(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`),
+    `电商平台上周销额环比<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台上周销额环比(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`),
+    `电商平台累计销量<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台累计销量(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`)
+}
+```
+
+# Card 10: 实际波段
+
+**ID:** f5e7070796136427e862185e
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 实际波段
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 11: 运营中类
+
+**ID:** h30a6fc23708f4351b8263b3
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 运营中类
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 12: 商品年
+
+**ID:** h5670c84a423044a79afdd7f
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 商品年
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 13: 运营大类
+
+**ID:** j29ad4960774b44efa01c87d
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 运营大类
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 14: 产品线(新)
+
+**ID:** q4281b68614654ad298646d2
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 产品线(新)
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 15: 是否上市
+
+**ID:** t5492de1722214d1c99fdda5
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 是否上市
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 16: 运营系列(新)
+
+**ID:** t54b68c864a2a4ced8f212ad
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 运营系列(新)
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 17: denim fit-name
+
+**ID:** v3a339882becc4b2c98289eb
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: denim fit-name
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 18: spu
+
+**ID:** v461fb04033eb4c1e9fde5ec
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: spu
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 19: 商品标签
+
+**ID:** v4c578c1c76934da9ba22018
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 商品标签
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 20: 商品期
+
+**ID:** w29781472ec1c4c4e87b7b26
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: 商品期
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 21: skc编码
+
+**ID:** w62e04757b5b74b36b92edb7
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: skc编码
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 22: denim fit-family
+
+**ID:** wb791376cf0644b388299543
+
+**Type:** SELECTOR
+
+
+
+
+## 筛选器配置
+- 类型: dropdown
+- 多选: true
+- 广播字段: denim fit-family
+
+### 影响的目标卡片
+- 启用自动联动（根据字段名自动匹配）
+
+# Card 23: 单品图册(SKC版_横排)
+
+**ID:** x01a786e3b192412e81dda72
+
+**Type:** PIVOT_TABLE
+
+
+
+## 字段格式化信息
+
+** 吊牌价**
+  - specifier: $,.0f
+
+
+** 全渠道消化率目标**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 全渠道消化率落差**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 上周销额**
+  - specifier: ,.0f
+  - prefixUnit: 万
+  - divideDataBy: 10000
+
+
+** 上周销量**
+  - specifier: ,.0f
+
+
+
+## 交互联动
+此卡片监听以下筛选器:
+
+- 筛选器名称: 实际上市日期
+- 筛选器ID: b71ace76438134860b6a3eed
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际上市日期 -> 实际上市日期
+
+- 筛选器名称: 实际波段
+- 筛选器ID: f5e7070796136427e862185e
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 实际波段 -> 实际波段
+
+- 筛选器名称: 运营中类
+- 筛选器ID: h30a6fc23708f4351b8263b3
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营中类 -> 运营中类
+
+- 筛选器名称: 商品年
+- 筛选器ID: h5670c84a423044a79afdd7f
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品年 -> 商品年
+
+- 筛选器名称: 运营大类
+- 筛选器ID: j29ad4960774b44efa01c87d
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营大类 -> 运营大类
+
+- 筛选器名称: 产品线(新)
+- 筛选器ID: q4281b68614654ad298646d2
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 产品线(新) -> 产品线(新)
+
+- 筛选器名称: 是否上市
+- 筛选器ID: t5492de1722214d1c99fdda5
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 是否上市 -> 是否上市
+
+- 筛选器名称: 运营系列(新)
+- 筛选器ID: t54b68c864a2a4ced8f212ad
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 运营系列(新) -> 运营系列(新)
+
+- 筛选器名称: denim fit-name
+- 筛选器ID: v3a339882becc4b2c98289eb
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-name -> denim fit-name
+
+- 筛选器名称: spu
+- 筛选器ID: v461fb04033eb4c1e9fde5ec
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * spu -> spu
+
+- 筛选器名称: 商品标签
+- 筛选器ID: v4c578c1c76934da9ba22018
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品标签 -> 商品标签
+
+- 筛选器名称: 商品期
+- 筛选器ID: w29781472ec1c4c4e87b7b26
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * 商品期 -> 商品期
+
+- 筛选器名称: skc编码
+- 筛选器ID: w62e04757b5b74b36b92edb7
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * skc编码 -> skc编码
+
+- 筛选器名称: denim fit-family
+- 筛选器ID: wb791376cf0644b388299543
+- 事件类型: selection
+- 效果类型: filter
+- 字段映射:
+  * denim fit-family -> denim fit-family
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  group_by:
+    `序号` is row_number() over (partition by `参考` order by `上周销额` desc) , // from column
+    `商品图片url`, // from column
+    `商品标签`, // from column
+    `denim fit-name`, // from column
+    `skc编码` // from column
+  aggregate:
+    `运营波段（skc）` is max(`运营波段（skc）`),
+    `吊牌价` is max(`吊牌价`),
+    `实际上市日期` is max(`实际上市日期`),
+    `颜色` is max(`颜色中文名称`),
+    `全渠道消化率目标` is max(`全渠道消化率目标`),
+    `全渠道消化率落差` is max(`全渠道消化率落差`),
+    `全渠道畅平销` is max(`全渠道畅平销`),
+    `上周销额` is sum(`上周销额`),
+    `上周销量` is sum(`上周销量`),
+    `上周销量环比<br>自营/托管/电商/港澳` is max(`上周销量环比/自营/托管/电商`),
+    `上周销额环比<br>自营/托管/电商/港澳` is max(`上周销额环比/自营/托管/电商`),
+    `累计销量<br>自营/托管/电商/港澳` is max(`累计销量/自营/托管/电商`),
+    `周转<br>自营/托管/电商/港澳/<br>N/E/S/W<br>北区/南区` is max(`各渠道周转`),
+    `总库存<br>自营/托管/电商/港澳/总仓` is max(`总库存/自营/托管/电商/总仓`),
+    `总订单量<br>自营/托管/电商/港澳/总仓` is max(`总订单量/自营/托管/电商`),
+    `总订量(PO)<br>自营/托管/电商/港澳/共享` is max(`总订量(PO)`),
+    `累计折扣<br>自营/托管/电商/港澳` is max(`累计折扣/自营/托管/电商/港澳`),
+    `累计销量<br>N/E/S/W<br>北区/南区<br>线上(小程序/电商)` is max(`累计销量(E/S/W/N/HZ/小程序/东/南/北/EC)`),
+    `线下/线上累计消化率` is max(`线下/线上累计消化率`),
+    `累计消化率<br>自营/托管/电商/港澳` is max(`累计消化率/自营/托管/电商`),
+    `累计消化率<br>N/E/S/W<br>北区/南区<br>线上(小程序/电商)` is max(`累计消化率(E/S/W/N/小程序/东/南/北/EC)`),
+    `电商平台上周销量<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台上周销量(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`),
+    `电商平台上周销量环比<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台上周销量环比(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`),
+    `电商平台上周销额环比<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台上周销额环比(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`),
+    `电商平台累计销量<br>电商总销量<br>天猫旗舰/抖音/微信<br>其他` is max(`电商平台累计销量(天猫旗舰/抖音/微信<br>天猫奥莱/京东/小红书/得物<br>唯品会/员工特卖)`)
+}
+```
+
+# Card 24: 单品图册(SKC版_横排)_副本
+
+**ID:** id230bb4bf4274286ba13931
+
+**Type:** PIVOT_TABLE
+
+
+
+## 字段格式化信息
+
+** 吊牌价**
+  - specifier: $,.0f
+
+
+** 全渠道消化率目标**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 全渠道消化率落差**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 上周销额**
+  - specifier: ,.0f
+  - prefixUnit: 万
+  - divideDataBy: 10000
+
+
+** 上周销量**
+  - specifier: ,.0f
+
+
+** 总订量(PO)**
+  - specifier: ,.0f
+
+
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  group_by:
+    `序号` is row_number() over (partition by `参考` order by `上周销额` desc) , // from column
+    `商品图片url`, // from column
+    `商品标签`, // from column
+    `denim fit-name`, // from column
+    `skc编码` // from column
+  aggregate:
+    `运营波段（skc）` is max(`运营波段（skc）`),
+    `吊牌价` is max(`吊牌价`),
+    `实际上市日期` is max(`实际上市日期`),
+    `颜色` is max(`颜色中文名称`),
+    `全渠道消化率目标` is max(`全渠道消化率目标`),
+    `全渠道消化率落差` is max(`全渠道消化率落差`),
+    `全渠道畅平销` is max(`全渠道畅平销`),
+    `上周销额` is sum(`上周销额`),
+    `上周销量` is sum(`上周销量`),
+    `上周销量环比<br>自营/托管/电商/港澳` is max(`上周销量环比/自营/托管/电商`),
+    `上周销额环比<br>自营/托管/电商/港澳` is max(`上周销额环比/自营/托管/电商`),
+    `累计销量<br>自营/托管/电商/港澳` is max(`累计销量/自营/托管/电商`),
+    `周转<br>自营/托管/电商/港澳` is max(`各渠道周转`),
+    `总库存<br>自营/托管/电商/港澳/总仓` is max(`总库存/自营/托管/电商/总仓`),
+    `总订单量<br>自营/托管/电商/港澳/总仓` is max(`总订单量/自营/托管/电商`),
+    `总订量(PO)` is max(`总订量(PO)`),
+    `累计销量<br>N/E/S/W<br>北区/东区/南区<br>线上` is max(`累计销量(E/S/W/N/HZ/小程序/东/南/北/EC)`),
+    `线下/线上累计消化率` is max(`线下/线上累计消化率`),
+    `累计消化率<br>自营/托管/电商/港澳` is max(`累计消化率/自营/托管/电商`),
+    `累计消化率<br>N/E/S/W<br>北区/东区/南区<br>线上` is max(`累计消化率(E/S/W/N/小程序/东/南/北/EC)`),
+    `尺码销售%` is max(`尺码销售%(V2)`)
+}
+```
+
+# Card 25: 单品图册(SKC版_横排)-简易采买版
+
+**ID:** nc56bbc94f6284d76bc9226c
+
+**Type:** PIVOT_TABLE
+
+
+
+## 字段格式化信息
+
+** 吊牌价**
+  - specifier: $,.0f
+
+
+** 上市2周销量**
+  - specifier: ,.0f
+
+
+** 上市4周销量**
+  - specifier: ,.0f
+
+
+** 上市8周销量**
+  - specifier: ,.0f
+
+
+** 线下累计销量**
+  - specifier: ,.0f
+
+
+** 线上累计销量**
+  - specifier: ,.0f
+
+
+**全渠道销量 国内累计销量**
+  - specifier: ,.0f
+
+
+** 线下累计折扣**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 线上累计折扣**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+**线下头单订量 线下头单订量(PO)**
+  - specifier: ,.0f
+
+
+**线上头单订量 线上头单订量(PO)**
+  - specifier: ,.0f
+
+
+**总部头单订量 总部头单订量(PO)**
+  - specifier: ,.0f
+
+
+**翻单订量 翻单订量(PO)**
+  - specifier: ,.0f
+
+
+** 订量合计**
+  - specifier: ,.0f
+
+
+** 线下库存数量**
+  - specifier: ,.0f
+
+
+** 线上库存数量**
+  - specifier: ,.0f
+
+
+** 总仓库存数量**
+  - specifier: ,.0f
+
+
+** 库存合计**
+  - specifier: ,.0f
+
+
+** 全渠道累计消化率**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+
+## Malloy 查询语法
+```malloy
+run: t713ec260be484898ad366eb -> {
+  group_by:
+    `序号` is row_number() over (partition by `参考` order by `上周销额` desc) , // from column
+    `商品图片url`, // from column
+    `skc编码` // from column
+  aggregate:
+    `产品线(新)` is max(`产品线(新)`),
+    `运营系列(新)` is max(`运营系列(新)`),
+    `运营波段（skc）` is max(`运营波段（skc）`),
+    `denim fit-name` is max(`denim fit-name`),
+    `吊牌价` is max(`吊牌价`),
+    `特殊面料` is max(`特殊面料`),
+    `上市2周销量` is sum(`上市2周销量`),
+    `上市4周销量` is sum(`上市4周销量`),
+    `上市8周销量` is sum(`上市8周销量`),
+    `线下累计销量` is sum(`线下累计销量`),
+    `线上累计销量` is sum(`线上累计销量`),
+    `全渠道销量` is sum(`国内累计销量`),
+    `线下累计折扣` is sum(`线下累计销额`)/sum(`线下累计销售牌额`),
+    `线上累计折扣` is sum(`线上累计销额`)/sum(`线上累计销售牌额`),
+    `线下头单订量` is sum(`线下头单订量(PO)`),
+    `线上头单订量` is sum(`线上头单订量(PO)`),
+    `总部头单订量` is sum(`总部头单订量(PO)`),
+    `翻单订量` is sum(`翻单订量(PO)`),
+    `订量合计` is sum(`线下头单订量(PO)`+`线上头单订量(PO)`+`总部订量(PO)`+`翻单订量(PO)`),
+    `线下库存数量` is sum(`线下库存数量`),
+    `线上库存数量` is sum(`线上库存数量`),
+    `总仓库存数量` is sum(`总仓库存数量`),
+    `库存合计` is sum(`线下库存数量`+`线上库存数量`+`总仓库存数量`),
+    `全渠道累计消化率` is sum(`线下累计销量`+`线上累计销量`)/sum(`线下头单订量(PO)`+`线上头单订量(PO)`+`总部头单订量(PO)`+`翻单订量(PO)`)
+}
+```
+
+# Card 26: 简易版-营运
+
+**ID:** i69e432d0789c47f6a3ac47d
+
+**Type:** PIVOT_TABLE
+
+
+
+## 字段格式化信息
+
+**吊牌价 吊牌价_人民币**
+  - specifier: $,.0f
+
+
+** 全渠道消化率目标**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+** 全渠道消化率落差**
+  - specifier: ,.0%
+  - divideDataBy: 1
+
+
+
+## Malloy 查询语法
+```malloy
+run: x4746a5a3e2854131b9a49cd -> {
+  group_by:
+    `序号` is  
+row_number() over (partition by `参考` order by `上周销额` desc), // from column
+    `spu主图片url` // from column
+  aggregate:
+    `spu编码` is max(`spu编码`),
+    `实际波段` is max(`实际波段`),
+    `吊牌价` is max(`吊牌价_人民币`),
+    `实际上市日期` is max(`实际上市日期`),
+    `主面料` is max(`主面料`),
+    `全渠道消化率目标` is sum(`全渠道消化率目标`),
+    `全渠道消化率落差` is sum(`全渠道消化率落差`),
+    `全渠道畅平销` is max(`全渠道畅平销`),
+    `周销总排名，线下/线上` is max(`周销排名`),
+    `上周总销额，线下/线上` is max(`上周总销额/线下/线上`),
+    `上周总销量，线下/线上` is max(`上周总销量/线下/线上`),
+    `上周总销额环比，线下/线上` is max(`上周销额环比/线下/线上`),
+    `上周总销量环比，线下/线上` is max(`上周销量环比/线下/线上`),
+    `累计总销量，线下/线上` is max(`累计销量/线下/线上`),
+    `累计折扣，线下/线上` is max(`累计折扣/线下/线上`),
+    `累计消化率，线下/线上` is max(`累计消化率/线下/线上`),
+    `累计消化率自营/托管/电商/港澳` is max(`累计消化率/自营/托管/电商/港澳`),
+    `周转，自营/托管/电商/港澳` is max(`周转/自营/托管/电商/港澳`),
+    `正品总库存，自营/托管/电商/港澳/总仓` is max(`正品总库存/自营/托管/电商/港澳/总仓`),
+    `总订量(SO)，头单/翻单` is max(`头单/翻单`)
+}
+```
+
+
+---
+
+## 血缘关系
+
+### 上游资源 (2)
+- **单品图册(SKC版)** (DATA_SET_ETL)
+  - ID: t713ec260be484898ad366eb
+- **单品图册(product)** (DATA_SET_ETL)
+  - ID: x4746a5a3e2854131b9a49cd
+
+### 下游资源 (1)
+- **M60** (DATA_APPLICATION_WEB)
+  - ID: k016ddcac2f654543b21eb40

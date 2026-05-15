@@ -1,0 +1,26 @@
+# Card: 上周销额
+
+- ID: o6722f8db3ad0414f8a53c6a
+- Type: CHART
+- ChartType: KPI_CARD
+- 创建时间: 2026-04-09 11:58:23+0800
+- 更新时间: 2026-05-13 07:11:31+0800
+
+## 所在页面
+- 路径: 根目录 (md2095a99830d4db3b7177ea) > 固定报表 (b484fd8ab80954d898a8ce82) > 品牌 (w9359507ab40c4ffcb6f5c6c) > M60 (o0cfea19642a24e94b364402) > 商品 (ob11f6fea6d5445fcb5c76f5) > 单品图册 (t083d97f0cd484a6ca7612a4) > 1.2 单品图册(SKC版) (c38a7adbd12bc40eeaa00526)
+- 页面ID: c38a7adbd12bc40eeaa00526
+
+## 数据集信息
+- 名称: 单品图册(SKC版)
+- ID: t713ec260be484898ad366eb
+- 类型: DATAFLOW
+- 行数: 11704
+
+## 字段配置
+### metric (6个字段)
+- ▲销额% [DOUBLE]
+- ▲线下销额% [DOUBLE]
+- ▲线上销额% [DOUBLE]
+- 上周销额 [LONG] 聚合: SUM
+- 上上周销额 [LONG] 聚合: SUM
+- 累计销额 [LONG] 聚合: SUM

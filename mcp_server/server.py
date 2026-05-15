@@ -69,23 +69,23 @@ def list_dashboards() -> dict:
 
 
 @mcp.tool(description=tools.list_cards.__doc__)
-def list_cards(dashboard_id: str) -> dict:
+def list_cards(dashboard_id: Optional[str] = None) -> dict:
     return tools.list_cards(dashboard_id)
 
 
 @mcp.tool(description=tools.get_cards_by_filter.__doc__)
-def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
-    return tools.get_cards_by_filter(dashboard_id, filter_name)
+def get_cards_by_filter(filter_name: str, dashboard_id: Optional[str] = None) -> dict:
+    return tools.get_cards_by_filter(filter_name, dashboard_id)
 
 
 @mcp.tool(description=tools.get_card_data.__doc__)
 def get_card_data(
-    dashboard_id: str,
     card_id: str,
     filters: Optional[dict] = None,
     limit: int = 200,
+    dashboard_id: Optional[str] = None,
 ) -> dict:
-    return tools.get_card_data(dashboard_id, card_id, filters=filters, limit=limit)
+    return tools.get_card_data(card_id, filters=filters, limit=limit, dashboard_id=dashboard_id)
 
 
 if __name__ == "__main__":

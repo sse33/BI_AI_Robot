@@ -24,8 +24,18 @@ logging.basicConfig(
 logger = logging.getLogger("mcp.tools")
 
 
-def _get_dashboard(dashboard_id: str) -> dict:
-    """内部：按 dashboard_id 查找配置，不存在则抛出。"""
+def _get_dashboard(dashboard_id: Optional[str]) -> dict:
+    """内部：按 dashboard_id 查找配置。
+    - 传 None 且只有一个仪表板时自动选择
+    - 传 None 且有多个仪表板时抛出，提示用户先调用 list_dashboards
+    """
+    if dashboard_id is None:
+        if len(DASHBOARDS) == 1:
+            return next(iter(DASHBOARDS.values()))
+        raise ValueError(
+            f"有多个仪表板，请先调用 list_dashboards 获取 dashboard_id，"
+            f"可用：{list(DASHBOARDS.keys())}"
+        )
     d = DASHBOARDS.get(dashboard_id)
     if not d:
         available = list(DASHBOARDS.keys())
@@ -80,7 +90,7 @@ def list_dashboards() -> dict:
     return result
 
 
-def list_cards(dashboard_id: str) -> dict:
+def list_cards(dashboard_id: Optional[str] = None) -> dict:
     """
     列出指定仪表板的所有数据卡片及其业务描述。
     Agent 根据 business_description 判断用哪张卡片回答用户问题，再调用 get_card_data。
@@ -121,7 +131,7 @@ def list_cards(dashboard_id: str) -> dict:
     return result
 
 
-def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
+def get_cards_by_filter(filter_name: str, dashboard_id: Optional[str] = None) -> dict:
     """
     返回指定仪表板中监听某个筛选器的所有数据卡片。
     Agent 在用特定条件（如 skc编码、实际波段）筛选时，先调用此工具
@@ -166,10 +176,10 @@ def get_cards_by_filter(dashboard_id: str, filter_name: str) -> dict:
 
 
 def get_card_data(
-    dashboard_id: str,
     card_id: str,
     filters: Optional[dict] = None,
     limit: int = 200,
+    dashboard_id: Optional[str] = None,
 ) -> dict:
     """
     获取指定仪表板中某张卡片的当前数据。

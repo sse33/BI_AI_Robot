@@ -220,7 +220,7 @@ curl -I http://61.140.131.180:30866/sse \
 | 问题 | 解决方法 |
 |---|---|
 | SSH socket 不存在 | 执行 `zsh` → `auto-transfer` 重新登录 |
-| GitHub clone 失败（防火墙） | 使用 `https://gh-proxy.com/https://github.com/sse33/BI_AI_Robot.git` |
+| GitHub 被防火墙屏蔽 | 服务器 remote URL 必须始终使用代理：`git remote set-url origin https://gh-proxy.com/https://github.com/sse33/BI_AI_Robot.git`，**不得改为直连** |
 | buildkit 未启动 | `systemctl start buildkit` |
 | Pod CrashLoopBackOff | `kubectl logs -n bi-assistant -l app=bi-assistant --tail=50` 查看启动日志，通常是 Secret 配置错误或 guancli 登录失败 |
 | NodePort 30866 冲突 | `kubectl get svc --all-namespaces | grep 30866` 排查占用 |

@@ -54,12 +54,14 @@ class ApiKeyMiddleware:
 
     async def __call__(self, scope, receive, send):
         if scope["type"] == "http":
-            headers = {k.lower(): v for k, v in scope.get("headers", [])}
-            auth = headers.get(b"authorization", b"").decode()
-            if auth != f"Bearer {self.api_key}":
-                response = Response("Unauthorized", status_code=401)
-                await response(scope, receive, send)
-                return
+            # DELETE is session cleanup (Streamable HTTP), allow without auth
+            if scope.get("method", "").upper() != "DELETE":
+                headers = {k.lower(): v for k, v in scope.get("headers", [])}
+                auth = headers.get(b"authorization", b"").decode()
+                if auth != f"Bearer {self.api_key}":
+                    response = Response("Unauthorized", status_code=401)
+                    await response(scope, receive, send)
+                    return
         await self.app(scope, receive, send)
 
 

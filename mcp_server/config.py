@@ -139,6 +139,14 @@ DASHBOARDS = {
         "产品线(新)", "是否上市", "运营系列(新)", "denim fit-name",
         "spu", "商品标签", "商品期", "skc编码", "denim fit-family",
     ],
+    # 支持 list_filter_values 模糊枚举查询的筛选器（多值字段）
+    # key = 筛选器字段名，value = {ds_id, field}（guancli ds preview 参数）
+    "filter_datasources": {
+        "商品标签": {
+            "ds_id": "t713ec260be484898ad366eb",
+            "field": "商品标签",
+        },
+    },
     },  # end c38a7adbd12bc40eeaa00526
 }
 

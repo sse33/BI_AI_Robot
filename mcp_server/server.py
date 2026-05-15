@@ -80,6 +80,15 @@ def get_cards_by_filter(filter_name: str, dashboard_id: Optional[str] = None) ->
     return tools.get_cards_by_filter(filter_name, dashboard_id)
 
 
+@mcp.tool(description=tools.list_filter_values.__doc__)
+def list_filter_values(
+    filter_name: str,
+    keyword: str,
+    dashboard_id: Optional[str] = None,
+) -> dict:
+    return tools.list_filter_values(filter_name, keyword, dashboard_id)
+
+
 @mcp.tool(description=tools.get_card_data.__doc__)
 def get_card_data(
     card_id: str,

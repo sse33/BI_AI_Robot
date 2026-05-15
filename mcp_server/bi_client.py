@@ -109,7 +109,7 @@ def _parse_chart_main(chart_main: dict) -> list[dict]:
 
 def get_card_data(
     card_id: str,
-    filters: Optional[dict[str, str]] = None,
+    filters: Optional[dict[str, str | list]] = None,
     limit: int = 200,
 ) -> list[dict]:
     """
@@ -117,8 +117,9 @@ def get_card_data(
 
     Args:
         card_id: 卡片 ID（cdId）
-        filters: 筛选条件，字段名 → 值（单值 EQ 匹配）
-                 例：{"实际波段": "SS26", "运营中类": "牛仔裤"}
+        filters: 筛选条件，字段名 → 值
+                 单值：EQ 精确匹配，例 {"实际波段": "SS26"}
+                 列表：IN 多值匹配，例 {"商品标签": ["生意款", "生意款 亚洲大片"]}
         limit: 最多返回行数，卡片接口上限 1000
 
     Returns:
@@ -129,9 +130,53 @@ def get_card_data(
 
     if filters:
         for field, value in filters.items():
-            args += ["--filter", f"{field} EQ {value}"]
+            if isinstance(value, list):
+                vals = ",".join(str(v) for v in value)
+                args += ["--filter", f"{field} IN {vals}"]
+            else:
+                args += ["--filter", f"{field} EQ {value}"]
 
     raw = _run_guancli(args)
     payload = json.loads(raw)
     chart_main = payload["response"]["chartMain"]
     return _parse_chart_main(chart_main)
+
+
+def list_filter_values(ds_id: str, field: str, keyword: str) -> list[str]:
+    """
+    通过 CONTAINS 模糊查询获取数据集中某字段包含关键词的所有枚举值。
+    用于多值字段（如商品标签）的枚举值发现：先找出所有含关键词的组合值，
+    再将这些完整值列表传给 get_card_data 进行 IN 精确匹配。
+
+    Args:
+        ds_id: 数据集 ID
+        field: 字段名（与仪表板筛选器字段名一致）
+        keyword: 模糊搜索关键词
+
+    Returns:
+        去重后的枚举值列表，已排序
+    """
+    args = [
+        "ds", "preview", ds_id,
+        "--columns", field,
+        "--filter", f"{field} CONTAINS {keyword}",
+        "--limit", "1000",
+        "-f", "json",
+    ]
+    raw = _run_guancli(args)
+    payload = json.loads(raw)
+
+    # ds preview -f json 返回结构：{"data": [[val], ...], "columns": [...]}
+    values = set()
+    data = payload.get("data", [])
+    for row in data:
+        if isinstance(row, list):
+            val = row[0] if row else None
+        elif isinstance(row, dict):
+            val = next(iter(row.values()), None)
+        else:
+            val = row
+        if val is not None and str(val).strip():
+            values.add(str(val).strip())
+
+    return sorted(values)

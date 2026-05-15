@@ -15,6 +15,7 @@ from typing import Optional
 
 from config import DASHBOARDS
 from bi_client import get_card_data as _get_card_data
+from bi_client import list_filter_values as _list_filter_values
 
 logging.basicConfig(
     level=logging.INFO,
@@ -172,6 +173,63 @@ def get_cards_by_filter(filter_name: str, dashboard_id: Optional[str] = None) ->
         "cards": matched,
     }
     _log_ok("get_cards_by_filter", t0, f"{result['matched_card_count']} matched")
+    return result
+
+
+def list_filter_values(
+    filter_name: str,
+    keyword: str,
+    dashboard_id: Optional[str] = None,
+) -> dict:
+    """
+    通过关键词模糊搜索筛选器的枚举值，适用于商品标签等多值字段。
+
+    商品标签是多值字段：一个 SKC 可同时带多个标签，在数据库中以组合字符串存储
+    （如 "生意款 亚洲大片 橱窗"）。直接用 EQ 筛选 "生意款" 无法匹配此类组合值。
+    正确做法：先调用 list_filter_values 获取所有包含该关键词的完整枚举值，
+    再将返回的 values 列表作为 filters 传给 get_card_data 进行精确 IN 匹配。
+
+    示例流程：
+      1. list_filter_values(filter_name="商品标签", keyword="生意款")
+         → {"values": ["生意款", "生意款 亚洲大片", "生意款 橱窗", ...]}
+      2. get_card_data(card_id=..., filters={"商品标签": ["生意款", "生意款 亚洲大片", ...]})
+
+    Args:
+        dashboard_id: 仪表板 ID，从 list_dashboards 结果中获取
+        filter_name: 筛选器字段名，必须来自 list_cards 返回的 available_filters
+                     当前支持：'商品标签'
+        keyword: 搜索关键词（CONTAINS 模糊匹配）
+
+    Returns:
+        {
+          "filter_name": "...",
+          "keyword": "...",
+          "matched_count": N,
+          "values": ["完整枚举值1", "完整枚举值2", ...]
+        }
+    """
+    t0 = _log_call("list_filter_values", filter_name=filter_name, keyword=keyword)
+    try:
+        d = _get_dashboard(dashboard_id)
+        datasources = d.get("filter_datasources", {})
+        if filter_name not in datasources:
+            available = list(datasources.keys())
+            raise ValueError(
+                f"筛选器 '{filter_name}' 不支持枚举值查询，"
+                f"当前支持：{available}"
+            )
+        cfg = datasources[filter_name]
+        values = _list_filter_values(cfg["ds_id"], cfg["field"], keyword)
+    except Exception as e:
+        _log_err("list_filter_values", t0, e)
+        raise
+    result = {
+        "filter_name": filter_name,
+        "keyword": keyword,
+        "matched_count": len(values),
+        "values": values,
+    }
+    _log_ok("list_filter_values", t0, f"{len(values)} values matched '{keyword}'")
     return result
 
 

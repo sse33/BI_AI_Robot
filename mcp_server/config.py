@@ -134,10 +134,22 @@ DASHBOARDS = {
         },
     ],
     # 页面可用筛选维度（SELECTOR 卡片对应字段）
+    # 每项含 name（字段名，传给 get_card_data filters）和 description（字段语义与示例值）
     "available_filters": [
-        "实际上市日期", "实际波段", "运营中类", "商品年", "运营大类",
-        "产品线(新)", "是否上市", "运营系列(新)", "denim fit-name",
-        "spu", "商品标签", "商品期", "skc编码", "denim fit-family",
+        {"name": "skc编码",        "description": "单品 SKC 编码，精确匹配单个商品，例：6M2JJ44500F37"},
+        {"name": "实际波段",        "description": "上市波段，例：SS26、AW26、4A-1、5E-2"},
+        {"name": "商品标签",        "description": "商品特殊面料/工艺标注，例：汉麻牛仔、弹力、有机棉"},
+        {"name": "运营中类",        "description": "运营品类分类，例：牛仔裤、夹克、衬衣、T恤"},
+        {"name": "运营大类",        "description": "运营大类，例：上装、下装、外套"},
+        {"name": "产品线(新)",      "description": "产品线，例：MAIN LINE、EVERYDAY、OUTLET、BLACK GOLD"},
+        {"name": "运营系列(新)",    "description": "运营系列，例：DENIM GRID、FASHION DENIM GRID"},
+        {"name": "denim fit-name",  "description": "牛仔版型名称，例：ALICE、LOOSE、BLUE ATTACK"},
+        {"name": "denim fit-family","description": "牛仔版型系列"},
+        {"name": "spu",             "description": "SPU 编码，同款不同色商品共享一个 SPU"},
+        {"name": "商品年",          "description": "商品所属年份，例：2025、2026"},
+        {"name": "商品期",          "description": "商品上市季节，例：SS（春夏）、AW（秋冬）"},
+        {"name": "实际上市日期",    "description": "商品实际上市日期，格式 YYYY-MM-DD"},
+        {"name": "是否上市",        "description": "商品是否已上市，值为「是」或「否」"},
     ],
     },  # end c38a7adbd12bc40eeaa00526
 }

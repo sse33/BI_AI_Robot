@@ -166,14 +166,14 @@ def list_filter_values(ds_id: str, field: str, keyword: str) -> list[str]:
     raw = _run_guancli(args)
     payload = json.loads(raw)
 
-    # ds preview -f json 返回结构：{"data": [[val], ...], "columns": [...]}
+    # ds preview -f json 返回结构：[{"字段名": "值"}, ...]
     values = set()
-    data = payload.get("data", [])
-    for row in data:
-        if isinstance(row, list):
+    rows = payload if isinstance(payload, list) else payload.get("data", [])
+    for row in rows:
+        if isinstance(row, dict):
+            val = row.get(field)
+        elif isinstance(row, list):
             val = row[0] if row else None
-        elif isinstance(row, dict):
-            val = next(iter(row.values()), None)
         else:
             val = row
         if val is not None and str(val).strip():
